@@ -1,0 +1,32 @@
+----- TASK 1 -----
+
+----- TASK 2 -----
+
+----- TASK 3 -----
+Memory leak is when the code is allocating the memory, but doesn't free it
+either because it looses the pointer or forgets to free it.
+Example:
+int main() {
+  int* foo = new int;
+  int* bar = nullptr;
+  int* zar = new int;
+
+  // We're loosing the pointer to alocated memory
+  // with every write to `bar`
+  for( int i = 0; i < 8; i++ ) {
+    bar = new int;
+  }
+
+  // OK - 'zar' freed.
+  delete zar;
+  // Not OK - foo not freed.
+  // Not OK - bar not freed 8 times.
+}
+
+----- TASK 4 -----
+Reference is just a sugar coating for a pointer, it's just the second one 
+in disguise.
+The main difference is: 
+- you can assign a reference only once, 
+- you can't free the reference directly (you can do `delete &reference_type`, but it's weird)
+- you can't use it to create arrays ( int& arr = new int[100] -- not valid C++)

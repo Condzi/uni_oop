@@ -1,0 +1,6 @@
+intermediate
+bin
+.vs
+debug
+*.vcxproj.filters
+*.vcxproj.user
