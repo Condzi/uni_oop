@@ -1,0 +1,21 @@
+Task 5
+
+The `const` keyword signals the compiler that given element of the 
+code shouldn't be modified. It serves at least two things:
+  1) makes program more self explanatory, since parts which
+     shouldn't be written to at runtime are marked as such
+  2) helps the compiler optimize the code, because we're giving
+     it a declaration, that some variables are constant and will not change.
+
+That keyword doesn't change the behavior of the methods. With or without
+`const`, they will give the same results. However, `const` makes them possible 
+to be called in other methods marked as const. For example, `get_area() const` 
+can call `get_radius() const`. But if `get_radius()` was not marked as `const`, 
+that call would result in compile time error.
+
+`const`s in the Listing 1:
+First `const` signalies, that the method is returning non-modifiable reference to some object.
+Second `const` signalies, that the method is not modyfing its arguments (however, the argument 
+itself don't need to be constant)
+Third `const` is telling the compiler and other programmers, that this method does not modify any
+of the internal field of the class (unless they're marked as `mutable`, then they can be modified in a `const` context)
