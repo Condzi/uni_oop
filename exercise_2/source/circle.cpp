@@ -1,4 +1,4 @@
-#include "circle.hpp"
+#include "circle.h"
 
 // For M_PI. <cmath> doesn't expose the M_PI macro on msvc.
 #define _USE_MATH_DEFINES

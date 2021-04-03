@@ -160,7 +160,7 @@
     <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\circle.hpp">
+    <ClInclude Include="source\circle.h">
       <SubType>
       </SubType>
     </ClInclude>

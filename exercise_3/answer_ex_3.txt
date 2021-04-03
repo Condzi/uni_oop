@@ -1,0 +1,3 @@
+Static member functions cannot be declared as `const` because
+this keyword refers to the objects, and when a function is `static` 
+then there's no object we're referring to.

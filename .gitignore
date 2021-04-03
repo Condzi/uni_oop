@@ -4,3 +4,6 @@ bin
 debug
 *.vcxproj.filters
 *.vcxproj.user
+exercise_1/file_a.txt
+exercise_1/file_b.txt
+exercise_1/result.txt

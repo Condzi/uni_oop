@@ -1,7 +1,7 @@
 #include <iostream>
 using std::cout;
 
-#include "circle.hpp"
+#include "circle.h"
 
 int main()
 {
