@@ -1,0 +1,20 @@
+Project idea:
+
+  The database tables would contain columns like:
+  - Students and instructors basic personal data
+  - Grades from a courses and final grades
+  - types of attending courses by the students
+  - course information
+  - (and more, I didn't think about that too much. Of course, the 
+     tables will be normalised)
+
+  The data would be saved in some kind of CSV format, but with every table in one .txt file.
+
+  The software itself will contain at least three possible privillages modes:
+  - read only  (student -- can only check his own grades)
+  - read/write (instructor -- can see only his own courses and students marks from that course)
+  - read/write (administrator -- can remove students from courses, sending messages...)
+
+  I'm not predicting any advanced security measures (like passwords for the accounts), 
+  since I think that it's not in the scope of this project. 
+  
