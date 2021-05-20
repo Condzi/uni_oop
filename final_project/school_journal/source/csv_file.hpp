@@ -12,10 +12,16 @@ public:
       std::vector<s32> values;
     };
 
-    using Column = std::unordered_map<std::string, std::vector<std::string>>;
+    struct Column final {
+      std::string name;
+      std::vector<std::string> values;
+    };
 
+    // We're not using std::map, because we care about
+    // the order of the columns. Plus, it's not a big overhead
+    // since we have small number of columns.
     Key_Column key;
-    Column columns;
+    std::vector<Column> columns;
   };
 
   CSV_File() = default;
@@ -27,6 +33,7 @@ public:
   CSV_Data const& get_data();
 
   void parse();
+  // void save();
 
 private:
   bool successfull_parsing = false;

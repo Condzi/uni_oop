@@ -13,16 +13,16 @@ int main() {
 
   std::cout.setf( std::ios::right );
   std::cout << data.key.name << "    ";
-  for( auto const& pair : data.columns ) {
-      std::cout << pair.first << "\t\t";
+  for( auto const& col : data.columns ) {
+      std::cout << col.name << "\t\t";
   }
   std::cout << std::endl;
 
   for( size_t i = 0; i < data.key.values.size(); i++ ) {
     std::cout << data.key.values[i] << "    ";
     
-    for( auto const& pair : data.columns ) {
-      std::cout << pair.second[i] << "\t\t";
+    for( auto const& col : data.columns ) {
+      std::cout << col.values[i] << "\t\t";
     }
 
     std::cout << std::endl;

@@ -32,7 +32,11 @@ void CSV_File::parse() {
     column_names = split_line( line );
 
     data.key.name = column_names[0];
-    data.columns.reserve( column_names.size() - 1 );
+    data.columns.resize( column_names.size() - 1 );
+    for( size_t i = 0; i < column_names.size() - 1; i++ ) {
+      data.columns[i].name = column_names[i + 1];
+    }
+
     debug_print( "CSV_File::parse(): found %d columns in '%s'.", column_names.size(), path.c_str() );
   }
 
@@ -67,7 +71,7 @@ void CSV_File::parse() {
     data.key.values.push_back( key_value );
 
     for( size_t i = 1; i < values_in_line.size(); i++ ) {
-      data.columns[column_names[i]].push_back( values_in_line[i] );
+      data.columns[i - 1].values.push_back( values_in_line[i] );
     }
   }
 
