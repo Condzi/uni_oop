@@ -21,6 +21,8 @@ CSV_File::CSV_Data const& CSV_File::get_data() {
 }
 
 void CSV_File::parse() {
+  successfull_parsing = false;
+
   std::ifstream file( path );
   SJ_CHECK_FILE( file, "error after attempting to open '" + path + "'." );
 
@@ -76,6 +78,43 @@ void CSV_File::parse() {
   }
 
   successfull_parsing = true;
+}
+
+void CSV_File::save()
+{
+  std::ofstream file( path );
+  SJ_CHECK_FILE( file, "error after attempting to open '" + path + "'." );
+
+  // + 1 for key column.
+  auto const number_of_values_in_line = data.columns.size() + 1;
+  // Every column has the same number of rows.
+  auto const number_of_value_rows = data.key.values.size();
+
+  std::ostringstream line_builder;
+  
+  line_builder << data.key.name;
+  for( auto const& column : data.columns ) {
+    line_builder << ',' << column.name;
+  }
+  line_builder << '\n';
+
+  if( !(file << line_builder.str()) ) {
+    SJ_THROW( "Writing to file failed when writing column names." );
+  }
+
+  for( size_t i = 0; i < number_of_value_rows; i++ ) {
+    line_builder.str("");
+
+    line_builder << data.key.values[i];
+    for( auto const& column : data.columns ) {
+      line_builder << ',' << column.values[i];
+    }
+    line_builder << '\n';
+
+    if( !(file << line_builder.str()) ) {
+      SJ_THROW( "Writing to file failed at line " + std::to_string( i ) + "." );
+    }
+  }
 }
 
 std::vector<std::string> CSV_File::split_line( std::string line ) {

@@ -28,6 +28,8 @@ int main() {
     std::cout << std::endl;
   }
 
+  file.set_path( "data_test_2.csv" );
+  file.save();
 
   sj::debug_print( "\nAttempt completed." );
 }

@@ -33,7 +33,7 @@ public:
   CSV_Data const& get_data();
 
   void parse();
-  // void save();
+  void save();
 
 private:
   bool successfull_parsing = false;
