@@ -38,10 +38,11 @@ void debug_print( char const* fmt, TArgs ...args ) {
     if constexpr ( sizeof...(TArgs) == 0 ){
       std::puts( fmt );
     } else {
-      char buffer[512] = {};
-      s32 written = std::snprintf( buffer, 512 - 1, fmt,
+      constexpr size_t BUFFER_SIZE = 512;
+      char buffer[BUFFER_SIZE] = {};
+      auto const written = std::snprintf( buffer, BUFFER_SIZE - 1, fmt,
                               args... );
-      assert( written < 512 );
+      assert( written < BUFFER_SIZE );
 
       std::puts( buffer );
     }
@@ -52,7 +53,9 @@ void debug_print( char const* fmt, TArgs ...args ) {
 #define SJ_STRINGIFY( x ) SJ_STRINGIFY_IMPL( x )
 
 #define SJ_THROW( message ) \
-throw std::runtime_error( "File: " __FILE__ ":" SJ_STRINGIFY(__LINE__) ":\n" + std::string{ (message) } )
+throw std::runtime_error( "File: " __FILE__ \
+                          "\nLine: " SJ_STRINGIFY(__LINE__) \
+                          "\nwhat(): " + std::string{ (message) } )
 
 #define SJ_CHECK_FILE( file, message ) \
 if( !(file).good() ) SJ_THROW( message )

@@ -27,10 +27,10 @@ public:
   CSV_File() = default;
 
   void set_path( std::string const& new_path );
-  void move_new_data( CSV_Data&& new_data);
+  void move_new_data( CSV_Data&& new_data );
 
   [[nodiscard]]
-  CSV_Data const& get_data();
+  CSV_Data const& get_data() const;
 
   void parse();
   void save();

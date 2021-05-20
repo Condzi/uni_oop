@@ -12,7 +12,7 @@ void CSV_File::move_new_data( CSV_Data &&new_data )  {
   data = std::move( new_data );
 }
 
-CSV_File::CSV_Data const& CSV_File::get_data() {
+CSV_File::CSV_Data const& CSV_File::get_data() const {
   if( !successfull_parsing ) {
     SJ_THROW( "Attempt to get_data from '" + path + "', which was not successfully parsed." );
   }
@@ -67,7 +67,7 @@ void CSV_File::parse() {
     auto const[p, ec] = std::from_chars( key_str_begin, key_str_end, key_value );
 
     if( ec != std::errc() ) {
-      SJ_THROW( "error occurred when attempting to convert " + key_str + " to an s32." );
+      SJ_THROW( "error occurred when attempting to convert " + key_str + " to s32." );
     }
 
     data.key.values.push_back( key_value );
@@ -85,8 +85,6 @@ void CSV_File::save()
   std::ofstream file( path );
   SJ_CHECK_FILE( file, "error after attempting to open '" + path + "'." );
 
-  // + 1 for key column.
-  auto const number_of_values_in_line = data.columns.size() + 1;
   // Every column has the same number of rows.
   auto const number_of_value_rows = data.key.values.size();
 
@@ -120,14 +118,14 @@ void CSV_File::save()
 std::vector<std::string> CSV_File::split_line( std::string line ) {
   std::vector<std::string> words;
 
-  line.erase( std::remove_if( line.begin(), line.end(), [](char c){
+  line.erase( std::remove_if( line.begin(), line.end(), [](char c) {
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
-  }), line.end() );
+  } ), line.end() );
 
   std::istringstream ss( line );
 
   std::string splitted;
-  while( std::getline( ss, splitted, ',') ) {
+  while( std::getline( ss, splitted, ',' ) ) {
     words.push_back( splitted );
   }
 

@@ -164,6 +164,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\table.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="source\csv_file.hpp">
@@ -171,6 +172,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="source\pch.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="source\table.hpp">
       <SubType>
       </SubType>
     </ClInclude>
