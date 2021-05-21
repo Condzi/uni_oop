@@ -29,6 +29,19 @@ using s64 = std::int64_t;
 using f32 = float;
 using f64 = double;
 
+#define SJ_STRINGIFY_IMPL( x ) #x
+#define SJ_STRINGIFY( x ) SJ_STRINGIFY_IMPL( x )
+
+#define SJ_THROW( message ) \
+throw std::runtime_error( "File: " __FILE__ \
+                          "\nLine: " SJ_STRINGIFY(__LINE__) \
+                          "\nwhat(): " + std::string{ (message) } )
+
+#define SJ_CHECK_FILE( file, message ) \
+if( !(file).good() ) SJ_THROW( message )
+
+
+
 constexpr bool ENABLE_DEBUG_PRINT = true;
 
 template <typename ...TArgs>
@@ -49,14 +62,18 @@ void debug_print( char const* fmt, TArgs ...args ) {
   }
 }
 
-#define SJ_STRINGIFY_IMPL( x ) #x
-#define SJ_STRINGIFY( x ) SJ_STRINGIFY_IMPL( x )
+[[nodiscard]] inline
+s32 convert_string_to_s32( std::string const& str ) {
+  s32 value;
+  auto const begin = str.c_str();
+  auto const end = begin + str.size();
 
-#define SJ_THROW( message ) \
-throw std::runtime_error( "File: " __FILE__ \
-                          "\nLine: " SJ_STRINGIFY(__LINE__) \
-                          "\nwhat(): " + std::string{ (message) } )
+  auto const[p, ec] = std::from_chars( begin, end, value );
+  if( ec != std::errc() ) {
+      SJ_THROW( "error occurred when attempting to convert " + str + " to s32." );
+  }
 
-#define SJ_CHECK_FILE( file, message ) \
-if( !(file).good() ) SJ_THROW( message )
+  return value;
+}
+
 }

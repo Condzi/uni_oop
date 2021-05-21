@@ -32,7 +32,7 @@ public:
   [[nodiscard]]
   CSV_Data const& get_data() const;
 
-  void parse();
+  void load_from_file_and_parse();
   void save();
 
 private:

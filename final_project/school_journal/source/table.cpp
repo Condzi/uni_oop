@@ -10,11 +10,15 @@ Table::Table( std::string const& table_name, u8 access_type_ ) :
   access_type( access_type_ )
 {
   data_source.set_path( "database/" + table_name + ".csv" );
-  data_source.parse();
 }
 
 Table::~Table() {
   save_pending_changes();
+}
+
+void Table::load_from_file_and_parse() {
+  data_source.load_from_file_and_parse();
+  parse_data_to_internal_structure();
 }
 
 Table::Read_Only_Record Table::find_record( s32 key ) const {
@@ -61,13 +65,11 @@ Table::query( std::string const& column, s32 key ) const {
   // converting every column value to an integer.
   auto const key_as_str = std::to_string( key );
 
-  // unsigned value overflow on purpose.
-  size_t idx = -1;
   std::vector<size_t> ids;
-  for( auto col : raw_data.columns ) {
+  for( auto const& col : raw_data.columns ) {
     if( col.name == column ) {
-      idx = 0;
-      for( auto k : col.values ) {
+      size_t idx = 0;
+      for( auto const& k : col.values ) {
         if( key_as_str == k ) {
           ids.push_back( idx );
         }
@@ -89,8 +91,8 @@ Table::query( std::string const& column, s32 key ) const {
   for( auto id : ids ) {
     Read_Only_Record record;
     record.data.emplace_back( raw_data.key.name, std::to_string( raw_data.key.values[id] ) );
-    for( auto const& column : raw_data.columns ) {
-      record.data.emplace_back( column.name, column.values[id] );
+    for( auto const& col : raw_data.columns ) {
+      record.data.emplace_back( col.name, col.values[id] );
     }
 
     records.push_back( record );

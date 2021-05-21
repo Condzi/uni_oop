@@ -20,7 +20,7 @@ CSV_File::CSV_Data const& CSV_File::get_data() const {
   return data;
 }
 
-void CSV_File::parse() {
+void CSV_File::load_from_file_and_parse() {
   successfull_parsing = false;
 
   std::ifstream file( path );
@@ -60,16 +60,7 @@ void CSV_File::parse() {
       SJ_THROW( "number of expected values in line " + line_number_str + " is different." );
     }
 
-    auto const key_str = values_in_line[0];
-    char const* key_str_begin = key_str.c_str();
-    char const* key_str_end = key_str_begin + key_str.size();
-    s32 key_value = -1;
-    auto const[p, ec] = std::from_chars( key_str_begin, key_str_end, key_value );
-
-    if( ec != std::errc() ) {
-      SJ_THROW( "error occurred when attempting to convert " + key_str + " to s32." );
-    }
-
+    auto const key_value = convert_string_to_s32( values_in_line[0] );
     data.key.values.push_back( key_value );
 
     for( size_t i = 1; i < values_in_line.size(); i++ ) {

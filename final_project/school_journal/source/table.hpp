@@ -4,8 +4,7 @@
 
 namespace sj
 {
-class Table
-{
+class Table {
 public:
   struct Read_Only_Record final {
     struct Column final {
@@ -26,9 +25,15 @@ public:
 
   virtual ~Table();
 
+  void load_from_file_and_parse();
+
   [[nodiscard]]
   Read_Only_Record find_record( s32 key ) const;
 
+  // @ToDo: not needed?
+  // Key as string? There's no reason for it to be an integer
+  // Also, we could accept a list of <column, key> pairs to search
+  // for.
   [[nodiscard]] std::vector<Read_Only_Record> 
   query( std::string const& column, s32 key ) const;
 
@@ -39,10 +44,14 @@ public:
 
   void save_pending_changes();
 
-private:
-  std::string const name;
-  u8 access_type;
+protected:
   bool pending_changes;
   CSV_File data_source;
+
+  virtual void parse_data_to_internal_structure() = 0;
+
+private:
+  std::string const name;
+  u8 const access_type;
 };
 }
