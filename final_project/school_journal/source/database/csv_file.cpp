@@ -1,6 +1,6 @@
 #include "pch.hpp"
 
-#include "csv_file.hpp"
+#include "database/csv_file.hpp"
 
 namespace sj
 {
@@ -71,8 +71,7 @@ void CSV_File::load_from_file_and_parse() {
   successfull_parsing = true;
 }
 
-void CSV_File::save()
-{
+void CSV_File::save() {
   std::ofstream file( path );
   SJ_CHECK_FILE( file, "error after attempting to open '" + path + "'." );
 

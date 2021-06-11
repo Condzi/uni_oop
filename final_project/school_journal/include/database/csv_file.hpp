@@ -1,5 +1,7 @@
 #pragma once
 
+#include "pch.hpp"
+
 namespace sj
 {
 // 1st row has column names.

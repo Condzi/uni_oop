@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <sstream>
 #include <exception>
 
@@ -34,12 +35,11 @@ using f64 = double;
 
 #define SJ_THROW( message ) \
 throw std::runtime_error( "File: " __FILE__ \
-                          "\nLine: " SJ_STRINGIFY(__LINE__) \
+                          "\nLine: " SJ_STRINGIFY( __LINE__ ) \
                           "\nwhat(): " + std::string{ (message) } )
 
 #define SJ_CHECK_FILE( file, message ) \
 if( !(file).good() ) SJ_THROW( message )
-
 
 
 constexpr bool ENABLE_DEBUG_PRINT = true;
@@ -75,5 +75,4 @@ s32 convert_string_to_s32( std::string const& str ) {
 
   return value;
 }
-
 }
