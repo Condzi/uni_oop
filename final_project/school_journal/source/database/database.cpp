@@ -25,11 +25,33 @@ void Database::load_from_folder() {
 
     #undef SJ_LOAD_TABLE
   } catch( std::runtime_error const& ex ) {
-    debug_print(" !!! Exception thrown:\n%s\n", ex.what() );
+    debug_print(" !!! Exception thrown whila loading from folder:\n%s\n", ex.what() );
     // @ToDo: rethrow exception, with different desc?
   }
 
   ready_to_read = true;
+}
+
+void Database::save_to_folder() {
+  // @Todo: debug only
+  folder = "non_prod/";
+
+  try {
+   #define SJ_SAVE_TABLE( x )    \
+      (x).set_path( folder + #x ".csv" );  \
+      (x).save()
+
+    SJ_SAVE_TABLE( courses );
+    SJ_SAVE_TABLE( enrollments );
+    SJ_SAVE_TABLE( fields_of_study );
+    SJ_SAVE_TABLE( grades );
+    SJ_SAVE_TABLE( instructors );
+    SJ_SAVE_TABLE( students );
+
+    #undef SJ_SAVE_TABLE
+  } catch( std::runtime_error const& ex) {
+    debug_print( " !!! Exception thrown while saving to folder:\n%s\n", ex.what() );
+  }
 }
 
 Student Database::create_student( s32 index ) {
@@ -91,14 +113,7 @@ Student Database::create_student( s32 index ) {
 
     auto instructor_id = convert_string_to_s32( temp["Instructor"] );
 
-    temp = instructors.get_row( instructor_id );
-    auto instructor_names = temp["Names"];
-    auto instructor_surname = temp["Surname"];
-
-    Instructor instructor( instructor_names, 
-                           instructor_surname, instructor_id );
-
-    s_courses.emplace_back( course_name, course_ects, instructor, course_id );
+    s_courses.emplace_back( course_name, course_ects, instructor_id, course_id );
   }
 
   temp = fields_of_study.get_row( s_field_of_study_id );
@@ -144,5 +159,54 @@ Student Database::create_student( s32 index ) {
                    s_field_of_study, s_names, s_surname, index );
 
   return student;
+}
+
+Instructor Database::create_instructor( s32 id ) {
+  if( !ready_to_read ) {
+    debug_print( "Database is not ready for reading!\n" );
+    SJ_THROW( "Database is not ready for reading!" );
+  }
+
+  std::map<std::string, std::string> temp;
+  try {
+    temp = instructors.get_row( id );
+  } catch( std::runtime_error const& ex ) {
+    debug_print( "Can't find Instructor with id %d.\n", id );
+    // @ToDo: rethrow?
+  }
+
+  auto i_names   = temp["Names"];
+  auto i_surname = temp["Surname"];
+
+  std::vector<Course> i_courses;
+
+  auto const& courses_data = courses.get_data();
+  std::vector<s32> courses_keys;
+  for( auto const& column : courses_data.columns ) {
+    if( column.name == "Instructor" ) {
+      s32 idx = 0;
+      for( auto const& instructor_id : column.values ) {
+        auto const instructor_id_as_s32 = 
+                              convert_string_to_s32( instructor_id );
+        if( instructor_id_as_s32 == id ) {
+          courses_keys.push_back( courses_data.key.values[idx] );
+        }
+
+        idx++;
+      }
+      break;
+    }
+  }
+
+  for( auto key : courses_keys ) {
+    temp = courses.get_row( key );
+
+    auto name = temp["Name"];
+    auto ects = convert_string_to_s32( temp["ECTS"] );
+
+    i_courses.emplace_back( name, ects, id, key );
+  }
+
+  return { i_names, i_surname, std::move( i_courses ), (u64)id };
 }
 }

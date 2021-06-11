@@ -45,7 +45,7 @@ public:
   [[nodiscard]]
   std::string get_comment() const;
 
-  [[nodicsard]]
+  [[nodiscard]]
   Course const& get_course() const;
 
 private:

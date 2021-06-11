@@ -14,16 +14,15 @@ public:
   void set_folder( std::string const& folder_ );
 
   void load_from_folder();
-  // void save_to_folder();
+  void save_to_folder();
 
   [[nodiscard]]
   Student create_student( s32 index );
 
-  /*
   [[nodiscard]]
-  Instructor create_instructor( u64 id );
-  */
+  Instructor create_instructor( s32 id );
 
+  //void add_grade()
 
   // void add_grade, void add_enrollment...
 

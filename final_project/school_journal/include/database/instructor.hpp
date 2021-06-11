@@ -3,6 +3,7 @@
 #include "pch.hpp"
 
 #include "database_element.hpp"
+#include "course.hpp"
 
 namespace sj
 {
@@ -13,7 +14,7 @@ namespace sj
 class Instructor final : public Database_Element {
 public:
   Instructor( std::string const& names_, std::string const& surname_,
-              u64 key_ );
+              std::vector<Course>&& courses_, u64 key_ );
 
   [[nodiscard]]
   std::string get_names() const;
@@ -23,5 +24,6 @@ public:
 private:
   std::string names;
   std::string surname;
+  std::vector<Course> courses;
 };
 }
