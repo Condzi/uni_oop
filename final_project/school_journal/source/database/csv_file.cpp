@@ -20,6 +20,32 @@ CSV_File::CSV_Data const& CSV_File::get_data() const {
   return data;
 }
 
+std::map<std::string, std::string> CSV_File::get_row( s32 key ) const {
+  if( !successfull_parsing ) {
+    SJ_THROW( "Attempt to get_row from '" + path + "', which was not successfully parsed." );
+  }
+
+  std::map<std::string, std::string> result;
+  
+  size_t idx = 0;
+  for( auto k : data.key.values ) {
+    idx++;
+    if( k == key )
+      break;
+  }
+
+  if( idx == data.key.values.size() ) {
+    SJ_THROW( "Can't get_row for key " + std::to_string( key ) + " "
+              "from " + path + "." );
+  }
+
+  for( auto const& column : data.columns ) {
+    result.insert( column.name, column.values[idx] );
+  }
+
+  return result;
+}
+
 void CSV_File::load_from_file_and_parse() {
   successfull_parsing = false;
 

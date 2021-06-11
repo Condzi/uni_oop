@@ -13,6 +13,7 @@ public:
   u64 get_key() const { return key; }
 
 private:
+  // @ToDo: make key_t, because we're miss matching with s32.
   u64 key;
 };
 }

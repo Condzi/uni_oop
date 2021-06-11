@@ -3,6 +3,7 @@
 #include "pch.hpp"
 
 #include "database_element.hpp"
+#include "course.hpp"
 
 namespace sj
 {
@@ -18,7 +19,7 @@ public:
     Five_Half
   };
 
-  Grade( Value value_, std::string const& comment_,
+  Grade( Value value_, std::string const& comment_, Course const& course_,
          u64 key_ );
 
   [[nodiscard]] constexpr static
@@ -35,6 +36,9 @@ public:
     }
   }
 
+  [[nodiscard]] static
+  Value string_to_value( std::string const& str );
+
   [[nodiscard]]
   std::string_view get_value_as_string() const;
 
@@ -44,5 +48,6 @@ public:
 private:
   Value value;
   std::string comment;
+  Course course;
 };
 }

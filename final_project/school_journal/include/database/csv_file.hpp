@@ -34,6 +34,10 @@ public:
   [[nodiscard]]
   CSV_Data const& get_data() const;
 
+  // <row name, value>
+  [[nodiscard]]
+  std::map<std::string, std::string> get_row( s32 key ) const;
+
   void load_from_file_and_parse();
   void save();
 
