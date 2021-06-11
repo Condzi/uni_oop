@@ -1,2 +1,6 @@
-ID,Course_ID,Student_Index
+﻿ID,Course_ID,Student_Index
 1,1,100101
+2,1,100102
+3,2,100102
+4,2,100101
+5,3,100101

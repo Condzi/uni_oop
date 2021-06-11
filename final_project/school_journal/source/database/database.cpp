@@ -20,7 +20,6 @@ void Database::load_from_folder() {
     SJ_LOAD_TABLE( enrollments );
     SJ_LOAD_TABLE( fields_of_study );
     SJ_LOAD_TABLE( grades );
-    SJ_LOAD_TABLE( grades_comments );
     SJ_LOAD_TABLE( instructors );
     SJ_LOAD_TABLE( students );
 

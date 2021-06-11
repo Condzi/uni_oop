@@ -32,7 +32,6 @@ private:
   CSV_File enrollments;
   CSV_File fields_of_study;
   CSV_File grades;
-  CSV_File grades_comments;
   CSV_File instructors;
   CSV_File students;
 
