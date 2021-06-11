@@ -29,18 +29,18 @@ std::map<std::string, std::string> CSV_File::get_row( s32 key ) const {
   
   size_t idx = 0;
   for( auto k : data.key.values ) {
-    idx++;
     if( k == key )
       break;
+    idx++;
   }
 
   if( idx == data.key.values.size() ) {
     SJ_THROW( "Can't get_row for key " + std::to_string( key ) + " "
               "from " + path + "." );
   }
-
+  
   for( auto const& column : data.columns ) {
-    result.insert( column.name, column.values[idx] );
+    result[column.name] =  column.values[idx];
   }
 
   return result;
@@ -60,6 +60,16 @@ void CSV_File::load_from_file_and_parse() {
     column_names = split_line( line );
 
     data.key.name = column_names[0];
+    // UTF files seem to put some bytes at the beginning
+    // of the file, which I don't care about.
+    for( s64 i = 0; i < data.key.name.size(); ) {
+      if( data.key.name[i] < 1 ) {
+        data.key.name.erase( i, 1 );
+      } else {
+        i++;
+      }
+    }
+
     data.columns.resize( column_names.size() - 1 );
     for( size_t i = 0; i < column_names.size() - 1; i++ ) {
       data.columns[i].name = column_names[i + 1];
@@ -74,8 +84,6 @@ void CSV_File::load_from_file_and_parse() {
   while( std::getline( file, line ) ) {
     line_number++;
     auto const line_number_str = std::to_string( line_number );
-    SJ_CHECK_FILE( file, "error after attempting to read line " + 
-                          line_number_str + " from '" + path + "'.");
 
     if( line.empty() ) {
       continue;
@@ -93,6 +101,8 @@ void CSV_File::load_from_file_and_parse() {
       data.columns[i - 1].values.push_back( values_in_line[i] );
     }
   }
+  
+  SJ_CHECK_FILE( file, "error reading file from '" + path + "'." );
 
   successfull_parsing = true;
 }
@@ -134,9 +144,9 @@ void CSV_File::save() {
 std::vector<std::string> CSV_File::split_line( std::string line ) {
   std::vector<std::string> words;
 
-  line.erase( std::remove_if( line.begin(), line.end(), [](char c) {
-    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
-  } ), line.end() );
+  if( line.empty() ) {
+    SJ_THROW( "Empty line passed to split_line." );
+  }
 
   std::istringstream ss( line );
 

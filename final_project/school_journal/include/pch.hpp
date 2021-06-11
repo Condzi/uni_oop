@@ -39,7 +39,7 @@ throw std::runtime_error( "File: " __FILE__ \
                           "\nwhat(): " + std::string{ (message) } )
 
 #define SJ_CHECK_FILE( file, message ) \
-if( !(file).good() ) SJ_THROW( message )
+if( (file).bad() ) SJ_THROW( message )
 
 
 constexpr bool ENABLE_DEBUG_PRINT = true;

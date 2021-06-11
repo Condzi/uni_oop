@@ -40,10 +40,13 @@ public:
   Value string_to_value( std::string const& str );
 
   [[nodiscard]]
-  std::string_view get_value_as_string() const;
+  std::string get_value_as_string() const;
 
   [[nodiscard]]
   std::string get_comment() const;
+
+  [[nodicsard]]
+  Course const& get_course() const;
 
 private:
   Value value;

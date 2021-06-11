@@ -13,7 +13,7 @@ void Database::load_from_folder() {
 
   try {
     #define SJ_LOAD_TABLE( x )    \
-      (x).set_path( folder + #x );  \
+      (x).set_path( folder + #x ".csv" );  \
       (x).load_from_file_and_parse()
 
     SJ_LOAD_TABLE( courses );
@@ -33,7 +33,10 @@ void Database::load_from_folder() {
 }
 
 Student Database::create_student( s32 index ) {
-
+  if( !ready_to_read ) {
+    debug_print( "Database is not ready for reading!\n" );
+    SJ_THROW( "Database is not ready for reading!" );
+  }
   // (underscores used to avoid ambiguity with fields)
 
   std::map<std::string, std::string> temp;

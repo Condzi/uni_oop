@@ -24,8 +24,9 @@ Grade::Value Grade::string_to_value( std::string const &str ) {
   SJ_THROW( "Wrong string for grade value!" );
 }
 
-std::string_view Grade::get_value_as_string() const {
-  return Grade::value_to_string( value );
+std::string Grade::get_value_as_string() const {
+  auto sw = Grade::value_to_string( value );
+  return { sw.begin(), sw.end() };
 }
 
 std::string Grade::get_comment() const {
@@ -33,5 +34,9 @@ std::string Grade::get_comment() const {
     return "No comment.";
 
   return comment;
+}
+
+Course const& Grade::get_course() const {
+  return course;
 }
 }
