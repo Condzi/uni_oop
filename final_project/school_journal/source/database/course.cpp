@@ -5,7 +5,7 @@
 namespace sj
 {
 Course::Course( std::string const& name_, 
-                u32 ects_, s32 instructor_id_, u64 key_ ) : 
+                s32 ects_, Key instructor_id_, Key key_ ) : 
     Database_Element( key_ ),
     name( name_ ),
     ects( ects_ ),
@@ -20,7 +20,7 @@ u32 Course::get_ects() const {
   return ects;
 }
 
-s32 Course::get_instructor_id() const {
+Key Course::get_instructor_id() const {
   return instructor_id;
 }
 }

@@ -10,7 +10,7 @@ class Field_Of_Study final : public Database_Element {
 public:
   Field_Of_Study( std::string const& short_name_, 
                   std::string const& full_name_,
-                  u64 key_ );
+                  Key key_ );
 
   [[nodiscard]]
   std::string get_short_name() const;

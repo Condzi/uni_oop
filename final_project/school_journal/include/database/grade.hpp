@@ -19,8 +19,8 @@ public:
     Five_Half
   };
 
-  Grade( Value value_, std::string const& comment_, Course const& course_,
-         u64 key_ );
+  Grade( Value value_, std::string const& comment_, Key course_id_,
+         Key key_ );
 
   [[nodiscard]] constexpr static
   std::string_view value_to_string( Value const& val ) {
@@ -43,14 +43,17 @@ public:
   std::string get_value_as_string() const;
 
   [[nodiscard]]
+  f32 get_value_as_float() const;
+
+  [[nodiscard]]
   std::string get_comment() const;
 
   [[nodiscard]]
-  Course const& get_course() const;
+  Key get_course_id() const;
 
 private:
   Value value;
   std::string comment;
-  Course course;
+  Key course_id;
 };
 }

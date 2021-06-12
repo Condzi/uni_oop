@@ -8,8 +8,8 @@ namespace sj
 {
 class Course final : public Database_Element {
 public:
-  Course( std::string const& name_, u32 ects_, 
-          s32 instructor_id_, u64 key_ );
+  Course( std::string const& name_, s32 ects_, 
+          Key instructor_id_, Key key_ );
 
   [[nodiscard]]
   std::string const& get_name() const;
@@ -18,11 +18,11 @@ public:
   u32 get_ects() const;
 
   [[nodiscard]]
-  s32 get_instructor_id() const;
+  Key get_instructor_id() const;
 
 private:
   std::string name;
-  s32 instructor_id;
-  u32 ects;
+  Key instructor_id;
+  s32 ects;
 };
 }

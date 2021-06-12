@@ -4,30 +4,30 @@
 
 namespace sj
 {
-Student::Student( std::vector<Course>&& enrolled_courses_,
-                  std::vector<Grade>&& grades_,
-                  Field_Of_Study const& field_of_study_,
+Student::Student( std::vector<Key>&& enrolled_courses_ids_,
+                  std::vector<Key>&& grades_ids_,
+                  Key field_of_study_id_,
                   std::string const& names_,
                   std::string const& surname_,
-                  u64 key_ ) :
-  Database_Element( key_ ),
-  enrolled_courses{ std::move( enrolled_courses_ ) },
-  grades{ std::move( grades_ ) },
-  field_of_study( field_of_study_ ),
-  names( names_ ),
-  surname( surname_ )
+                  Key key_ ) :
+   Database_Element( key_ ),
+   enrolled_courses_ids{ std::move( enrolled_courses_ids_ ) },
+   grades_ids{ std::move( grades_ids_ ) },
+   field_of_study_id( field_of_study_id_ ),
+   names( names_ ),
+   surname( surname_ )
 {}
 
-std::vector<Course> const& Student::get_enrolled_courses() const {
-  return enrolled_courses;
+std::vector<Key> const& Student::get_enrolled_courses_ids() const {
+  return enrolled_courses_ids;
 }
 
-std::vector<Grade> const& Student::get_grades() const {
-  return grades;
+std::vector<Key> const& Student::get_grades_ids() const {
+  return grades_ids;
 }
 
-Field_Of_Study const& Student::get_field_of_study() const {
-  return field_of_study;
+Key Student::get_field_of_study_id() const {
+  return field_of_study_id;
 }
 
 std::string const& Student::get_names() const {

@@ -25,7 +25,7 @@ void Database::load_from_folder() {
 
     #undef SJ_LOAD_TABLE
   } catch( std::runtime_error const& ex ) {
-    debug_print(" !!! Exception thrown whila loading from folder:\n%s\n", ex.what() );
+    debug_print(" !!! Exception thrown while loading from folder:\n%s\n", ex.what() );
     // @ToDo: rethrow exception, with different desc?
   }
 
@@ -54,28 +54,23 @@ void Database::save_to_folder() {
   }
 }
 
-Student Database::create_student( s32 index ) {
-  if( !ready_to_read ) {
-    debug_print( "Database is not ready for reading!\n" );
-    SJ_THROW( "Database is not ready for reading!" );
-  }
-  // (underscores used to avoid ambiguity with fields)
+Student Database::create_student( Key index ) const {
+  throw_if_not_ready_to_read();
 
-  std::map<std::string, std::string> temp;
+  std::map<std::string, std::string> row;
   try {
-    temp = students.get_row( index );
+    row = students.get_row( index );
   } catch( std::runtime_error const& ex ) {
     debug_print( "Can't find student with id %d.\n", index );
     // @ToDo: rethrow?
   }
 
-  auto s_names = temp["Names"];
-  auto s_surname = temp["Surname"];
-  auto s_field_of_study_id = convert_string_to_s32( temp["Field_of_study"] );
+  auto s_names = row["Names"];
+  auto s_surname = row["Surname"];
+  auto s_field_of_study_id = convert_string_to_s32( row["Field_of_study"] );
 
   // 1. Find courses in enrollments.
-  // 2. If courses found, find grades.
-  std::vector<Course> s_courses;
+  // 2. Find grades.
 
   // 1.1. Find all enrollments for this student.
   auto const& enrollment_data = enrollments.get_data();
@@ -96,92 +91,57 @@ Student Database::create_student( s32 index ) {
     }
   }
 
-  // 1.2. Get courses keys from enrollments.
-  std::vector<s32> courses_keys;
+  // 1.2. Get courses keys from enrollments table.
+  std::vector<Key> s_courses;
   for( auto key : enrolled_courses_keys ) {
-    temp = enrollments.get_row( key );
-    courses_keys.push_back( convert_string_to_s32( temp["Course_ID"] ) );
+    row = enrollments.get_row( key );
+    s_courses.push_back( convert_string_to_s32( row["Course_ID"] ) );
   }
 
-  // 1.3. Create courses.
-  for( auto key : courses_keys ) {
-    temp = courses.get_row( key );
-
-    auto course_name = temp["Name"];
-    auto course_ects = convert_string_to_s32( temp["ECTS"] );
-    auto course_id = key;
-
-    auto instructor_id = convert_string_to_s32( temp["Instructor"] );
-
-    s_courses.emplace_back( course_name, course_ects, instructor_id, course_id );
-  }
-
-  temp = fields_of_study.get_row( s_field_of_study_id );
-  Field_Of_Study s_field_of_study( temp["Short_name"], temp["Full_name"], s_field_of_study_id );
-
-
+  // 2. Find grades
+  std::vector<Key> s_grades_ids;
+  // Not really a bug -- just a student before enrollments.
   if( s_courses.empty() ) {
     debug_print( "Student %d has no courses!\n", index );
-  }
+  } else {
+    for( auto const& column : grades.get_data().columns ) {
+      if( column.name == "Student_ID" ) {
+        s32 idx = 0;
+        for( auto const& student_index : column.values ) {
+          if( convert_string_to_s32( student_index ) == index ) {
+            s_grades_ids.push_back( grades.get_data().key.values[idx] );
+          }
 
-  std::vector<s32> s_grades_keys;
-  for( auto const& column : grades.get_data().columns ) {
-    if( column.name == "Student_ID" ) {
-      s32 idx = 0;
-      for( auto const& student_index : column.values ) {
-        if( convert_string_to_s32( student_index ) == index ) {
-          s_grades_keys.push_back( grades.get_data().key.values[idx] );
+          idx++;
         }
-
-        idx++;
+        break;
       }
-      break;
     }
   }
 
-  std::vector<Grade> s_grades;
-  for( auto key : s_grades_keys ) {
-    temp = grades.get_row( key );
-
-    auto course_id = convert_string_to_s32( temp["Course_ID"] );
-    auto grade = Grade::string_to_value( temp["Grade"] );
-    auto comment = temp["Comment"];
-
-    auto course = std::find_if( s_courses.begin(), s_courses.end(), 
-                                [&]( auto const& c ) {
-        return c.get_key() == course_id;
-    } );
-
-    s_grades.emplace_back( grade, comment, *course, key );
-  }
-
-  Student student( std::move( s_courses ), std::move( s_grades ),
-                   s_field_of_study, s_names, s_surname, index );
+  Student student( std::move( s_courses ), std::move( s_grades_ids ),
+                   s_field_of_study_id, s_names, s_surname, index );
 
   return student;
 }
 
-Instructor Database::create_instructor( s32 id ) {
-  if( !ready_to_read ) {
-    debug_print( "Database is not ready for reading!\n" );
-    SJ_THROW( "Database is not ready for reading!" );
-  }
+Instructor Database::create_instructor( Key id ) const {
+  throw_if_not_ready_to_read();
 
-  std::map<std::string, std::string> temp;
+  std::map<std::string, std::string> row;
   try {
-    temp = instructors.get_row( id );
+    row = instructors.get_row( id );
   } catch( std::runtime_error const& ex ) {
     debug_print( "Can't find Instructor with id %d.\n", id );
     // @ToDo: rethrow?
   }
 
-  auto i_names   = temp["Names"];
-  auto i_surname = temp["Surname"];
+  auto const i_names   = row["Names"];
+  auto const i_surname = row["Surname"];
 
-  std::vector<Course> i_courses;
+  std::vector<Key> i_courses_ids;
 
   auto const& courses_data = courses.get_data();
-  std::vector<s32> courses_keys;
   for( auto const& column : courses_data.columns ) {
     if( column.name == "Instructor" ) {
       s32 idx = 0;
@@ -189,7 +149,7 @@ Instructor Database::create_instructor( s32 id ) {
         auto const instructor_id_as_s32 = 
                               convert_string_to_s32( instructor_id );
         if( instructor_id_as_s32 == id ) {
-          courses_keys.push_back( courses_data.key.values[idx] );
+          i_courses_ids.push_back( courses_data.key.values[idx] );
         }
 
         idx++;
@@ -198,15 +158,63 @@ Instructor Database::create_instructor( s32 id ) {
     }
   }
 
-  for( auto key : courses_keys ) {
-    temp = courses.get_row( key );
+  return { i_names, i_surname, std::move( i_courses_ids ), id };
+}
 
-    auto name = temp["Name"];
-    auto ects = convert_string_to_s32( temp["ECTS"] );
-
-    i_courses.emplace_back( name, ects, id, key );
+Grade Database::create_grade( Key id ) const {
+  throw_if_not_ready_to_read();
+  
+  std::map<std::string, std::string> row;
+  try {
+    row = grades.get_row( id );
+  } catch( std::runtime_error const& ex ) {
+    debug_print( "Can't find Grade with id %d.\n", id );
+    // @ToDo: rethrow?
   }
 
-  return { i_names, i_surname, std::move( i_courses ), (u64)id };
+  auto const grade     = Grade::string_to_value( row["Grade"] );
+  auto const comment   = row["Comment"];
+  auto const course_id = convert_string_to_s32( row["Course_ID"] );
+
+  return { grade, comment, course_id, id };
+}
+
+Course Database::create_course( Key id ) const {
+  throw_if_not_ready_to_read();
+  
+  std::map<std::string, std::string> row;
+  try {
+    row = courses.get_row( id );
+  } catch( std::runtime_error const& ex ) {
+    debug_print( "Can't find Course with id %d.\n", id );
+    // @ToDo: rethrow?
+  }
+
+  auto const name          = row["Name"];
+  auto const ects          = convert_string_to_s32( row["ECTS"] );
+  auto const instructor_id = convert_string_to_s32( row["Instructor"] );
+
+  return { name, ects, instructor_id, id };
+}
+
+Field_Of_Study Database::create_field_of_study(Key id) const {
+  throw_if_not_ready_to_read();
+  
+  std::map<std::string, std::string> row;
+  try {
+    row = fields_of_study.get_row( id );
+  } catch( std::runtime_error const& ex ) {
+    debug_print( "Can't find Field Of Study with id %d.\n", id );
+    // @ToDo: rethrow?
+  }
+  
+  return { row["Short_name"], row["Full_name"], id };
+}
+
+void Database::throw_if_not_ready_to_read() const {
+  if( !ready_to_read ) {
+    debug_print( "Database is not ready for reading!\n" );
+    SJ_THROW( "Database is not ready for reading!" );
+  }
 }
 }

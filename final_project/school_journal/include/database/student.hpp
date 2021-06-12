@@ -3,30 +3,27 @@
 #include "pch.hpp"
 
 #include "database_element.hpp"
-#include "grade.hpp"
-#include "field_of_study.hpp"
-#include "course.hpp"
 
 namespace sj
 {
 class Student final : public Database_Element {
 public:
-  Student( std::vector<Course>&& enrolled_courses_,
-           std::vector<Grade>&& grades_,
-           Field_Of_Study const& field_of_study_,
+  Student( std::vector<Key>&& enrolled_courses_ids_,
+           std::vector<Key>&& grades_ids_,
+           Key field_of_study_id_,
            std::string const& names_,
            std::string const& surname_,
-           u64 key_ );
+           Key key_ );
 
 
   [[nodiscard]]
-  std::vector<Course> const& get_enrolled_courses() const;
+  std::vector<Key> const& get_enrolled_courses_ids() const;
 
   [[nodiscard]]
-  std::vector<Grade> const& get_grades() const;
+  std::vector<Key> const& get_grades_ids() const;
 
   [[nodiscard]]
-  Field_Of_Study const& get_field_of_study() const;
+  Key get_field_of_study_id() const;
 
   [[nodiscard]]
   std::string const& get_names() const;
@@ -35,9 +32,9 @@ public:
   std::string const& get_surname() const;
 
 private:
-  std::vector<Course> enrolled_courses;
-  std::vector<Grade> grades;
-  Field_Of_Study field_of_study;
+  std::vector<Key> enrolled_courses_ids;
+  std::vector<Key> grades_ids;
+  Key field_of_study_id;
 
   std::string names;
   std::string surname;

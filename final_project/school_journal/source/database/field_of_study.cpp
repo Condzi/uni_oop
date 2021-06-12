@@ -6,7 +6,7 @@ namespace sj
 {
 Field_Of_Study::Field_Of_Study( std::string const& short_name_, 
                                 std::string const& full_name_,
-                                u64 key_ ) :
+                                Key key_ ) :
   Database_Element( key_ ),
   short_name( short_name_ ),
   full_name( full_name_ )

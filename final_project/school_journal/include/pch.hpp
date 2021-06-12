@@ -30,6 +30,9 @@ using s64 = std::int64_t;
 using f32 = float;
 using f64 = double;
 
+// @ToDo: use this everywhere
+using Key = s32;
+
 #define SJ_STRINGIFY_IMPL( x ) #x
 #define SJ_STRINGIFY( x ) SJ_STRINGIFY_IMPL( x )
 
