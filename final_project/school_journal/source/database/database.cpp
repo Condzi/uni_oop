@@ -67,7 +67,7 @@ Student Database::create_student( Key index ) const {
 
   auto s_names = row["Names"];
   auto s_surname = row["Surname"];
-  auto s_field_of_study_id = convert_string_to_s32( row["Field_of_study"] );
+  auto s_field_of_study_id = str_to_s32( row["Field_of_study"] );
 
   // 1. Find courses in enrollments.
   // 2. Find grades.
@@ -78,7 +78,7 @@ Student Database::create_student( Key index ) const {
  
   s32 idx = 0;
   for( auto const& e_index : enrollment_student_ids.content ) {
-    auto const e_index_as_s32 = convert_string_to_s32( e_index );
+    auto const e_index_as_s32 = str_to_s32( e_index );
     if( e_index_as_s32 == index ) {
       courses_keys.push_back( enrollments.get_key_column().content[idx] );
     }
@@ -91,7 +91,7 @@ Student Database::create_student( Key index ) const {
   std::vector<Key> s_courses;
   for( auto key : courses_keys ) {
     row = enrollments.get_row( key );
-    s_courses.push_back( convert_string_to_s32( row["Course_ID"] ) );
+    s_courses.push_back( str_to_s32( row["Course_ID"] ) );
   }
 
   // 2. Find grades
@@ -103,7 +103,7 @@ Student Database::create_student( Key index ) const {
     auto const& grades_student_ids = grades.get_column( "Student_ID" );
     idx = 0;
     for( auto const& g_index : grades_student_ids.content ) {
-      if( convert_string_to_s32( g_index ) == index ) {
+      if( str_to_s32( g_index ) == index ) {
          s_grades_ids.push_back( grades.get_key_column().content[idx] );
       }
       idx++;
@@ -135,7 +135,7 @@ Instructor Database::create_instructor( Key id ) const {
   auto const& instructor_id_courses = courses.get_column( "Instructor" );
   s32 idx = 0;
   for( auto const& i_id : instructor_id_courses.content ) {
-    auto const i_id_as_s32 = convert_string_to_s32( i_id );
+    auto const i_id_as_s32 = str_to_s32( i_id );
     if( i_id_as_s32 == id ) {
       i_courses_ids.push_back( courses.get_key_column().content[idx] );
     }
@@ -158,7 +158,7 @@ Grade Database::create_grade( Key id ) const {
 
   auto const grade     = Grade::string_to_value( row["Grade"] );
   auto const comment   = row["Comment"];
-  auto const course_id = convert_string_to_s32( row["Course_ID"] );
+  auto const course_id = str_to_s32( row["Course_ID"] );
 
   return { grade, comment, course_id, id };
 }
@@ -174,8 +174,8 @@ Course Database::create_course( Key id ) const {
   }
 
   auto const name          = row["Name"];
-  auto const ects          = convert_string_to_s32( row["ECTS"] );
-  auto const instructor_id = convert_string_to_s32( row["Instructor"] );
+  auto const ects          = str_to_s32( row["ECTS"] );
+  auto const instructor_id = str_to_s32( row["Instructor"] );
 
   return { name, ects, instructor_id, id };
 }

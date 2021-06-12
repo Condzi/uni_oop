@@ -1,4 +1,8 @@
 #pragma once
+/*
+  Precompiled header with utility stuff like
+  common types or STD library includes.
+*/
 
 #include <algorithm>
 #include <cassert>
@@ -66,14 +70,14 @@ void debug_print( char const* fmt, TArgs ...args ) {
 }
 
 [[nodiscard]] inline
-s32 convert_string_to_s32( std::string const& str ) {
+s32 str_to_s32( std::string const& str ) {
   s32 value;
   auto const begin = str.c_str();
   auto const end = begin + str.size();
 
   auto const[p, ec] = std::from_chars( begin, end, value );
   if( ec != std::errc() ) {
-      SJ_THROW( "error occurred when attempting to convert " + str + " to s32." );
+      SJ_THROW( "Error when converting '" + str + "' to s32." );
   }
 
   return value;

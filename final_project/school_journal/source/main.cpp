@@ -1,53 +1,48 @@
 #include "pch.hpp"
 
-#include "database/database.hpp"
-
+#include <iostream>
 #include <Windows.h>
 
-// @Todo: regenerate database before testing!
-
 int main() {
-  sj::Database db;
+  HANDLE terminal_input = GetStdHandle(STD_INPUT_HANDLE);
+  HANDLE terminal_output = GetStdHandle(STD_OUTPUT_HANDLE);
 
-  SetConsoleTitleA("MY TITLE!");
-  db.set_folder( "non_prod/" );
-  db.load_from_folder();
+  constexpr int max_term_height = 256;
+  constexpr int max_term_width = 256;
+  constexpr int buffer_size = 256 + 16*max_term_width*max_term_height;
 
-  auto s = db.create_student( 100103 );
+  char* buffer = new char[buffer_size];
+  memset( buffer, 0, buffer_size );
 
-  sj::debug_print( "\n\nStudent data:" );
-  sj::debug_print( "Name(s): %s | Surname: %s", s.get_names().c_str(), s.get_surname().c_str() );
-  auto fos = db.create_field_of_study( s.get_field_of_study_id() );
-  sj::debug_print( "Index: %d | Field of study: %s (%s)", s.get_key(), fos.get_short_name().c_str(), fos.get_full_name().c_str() );
-  
-  sj::debug_print( "\nEnrolled courses:" );
+  bool running = true;
+  while(running) {
+    CONSOLE_SCREEN_BUFFER_INFO terminal;
+    GetConsoleScreenBufferInfo(terminal_output, &terminal);
+    int terminal_width = terminal.srWindow.Right - terminal.srWindow.Left;
+    int terminal_height = terminal.srWindow.Bottom - terminal.srWindow.Top;
 
-  for( auto course_id : s.get_enrolled_courses_ids() ) {
-    auto course = db.create_course( course_id );
-    auto instructor = db.create_instructor( course.get_instructor_id() );
-    sj::debug_print(" %s worth %d ECTS | %s %s", course.get_name().c_str(), course.get_ects(), instructor.get_names().c_str(), instructor.get_surname().c_str() );
+    //WriteConsoleA( terminal_output, buffer, terminal_width*terminal_height, 0, 0);
+
+    while(WaitForSingleObject(terminal_input, 0) == WAIT_OBJECT_0) {
+      INPUT_RECORD record;
+      DWORD record_count = 0;
+
+      ReadConsoleInput(terminal_input, &record, 1, &record_count);
+
+      if(record_count) {
+        if(record.EventType == KEY_EVENT &&
+          record.Event.KeyEvent.bKeyDown &&
+          record.Event.KeyEvent.wRepeatCount == 1) {
+
+          if(record.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) {
+            running = false;
+          }
+          if(record.Event.KeyEvent.wVirtualKeyCode == VK_UP ) {
+            std::cout << "Up" << std::endl;
+          }
+
+        }
+      }
+    }
   }
-
-  sj::debug_print("\nGrades:");
-  for( auto grade_id : s.get_grades_ids() ) {
-    auto grade = db.create_grade( grade_id );
-    auto course = db.create_course( grade.get_course_id() );
-    auto instructor = db.create_instructor( course.get_instructor_id() );
-
-    sj::debug_print(" Course '%s': %s | Comment: '%s' | Given by %s %s", 
-                                            course.get_name().c_str(), 
-                                            grade.get_value_as_string().c_str(),
-                                            grade.get_comment().c_str(), 
-                                            instructor.get_names().c_str(), 
-                                            instructor.get_surname().c_str() );
-  }
-
-  //db.add_grade( sj::Grade::Value::Five_Half, "Second test grade! commas>',,,,,'<", s.get_key(), s.get_enrolled_courses_ids().front() );
-
-  //db.add_enrollment( 100103, 5 );
-
-  db.set_folder( "non_prod/" );
-  db.save_to_folder();
-
-  std::cin.get();
 }

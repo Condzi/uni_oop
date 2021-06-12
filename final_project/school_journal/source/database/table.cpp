@@ -108,7 +108,7 @@ void Table::load_and_parse() {
 
   keys.name = raw.front().name;
   for( auto const& key_str : raw.front().content ) {
-    keys.content.emplace_back( convert_string_to_s32( key_str ) );
+    keys.content.emplace_back( str_to_s32( key_str ) );
   }
 
   columns.resize( raw.size() - 1 );
