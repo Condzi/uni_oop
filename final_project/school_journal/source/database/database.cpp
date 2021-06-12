@@ -10,7 +10,6 @@ void Database::set_folder( std::string const& folder_ ) {
 }
 
 void Database::load_from_folder() {
-
   try {
     #define SJ_LOAD_TABLE( x )    \
       (x).set_path( folder + #x ".csv" );  \
@@ -33,6 +32,9 @@ void Database::load_from_folder() {
 }
 
 void Database::save_to_folder() {
+  if( !unsaved_changes ) {
+    return;
+  }
   // @Todo: debug only
   folder = "non_prod/";
 
@@ -52,6 +54,8 @@ void Database::save_to_folder() {
   } catch( std::runtime_error const& ex) {
     debug_print( " !!! Exception thrown while saving to folder:\n%s\n", ex.what() );
   }
+
+  unsaved_changes = false;
 }
 
 Student Database::create_student( Key index ) const {
@@ -61,8 +65,8 @@ Student Database::create_student( Key index ) const {
   try {
     row = students.get_row( index );
   } catch( std::runtime_error const& ex ) {
-    debug_print( "Can't find student with id %d.\n", index );
-    // @ToDo: rethrow?
+    SJ_THROW( "Student with index " + std::to_string( index ) + 
+              " doesn't exist." );
   }
 
   auto s_names = row["Names"];
@@ -100,8 +104,8 @@ Student Database::create_student( Key index ) const {
 
   // 2. Find grades
   std::vector<Key> s_grades_ids;
-  // Not really a bug -- just a student before enrollments.
   if( s_courses.empty() ) {
+    // Not really a bug -- just a student before enrollments.
     debug_print( "Student %d has no courses!\n", index );
   } else {
     for( auto const& column : grades.get_data().columns ) {
@@ -132,8 +136,8 @@ Instructor Database::create_instructor( Key id ) const {
   try {
     row = instructors.get_row( id );
   } catch( std::runtime_error const& ex ) {
-    debug_print( "Can't find Instructor with id %d.\n", id );
-    // @ToDo: rethrow?
+    SJ_THROW( "Instructor with id " + std::to_string( id ) + 
+              " doesn't exist." );
   }
 
   auto const i_names   = row["Names"];
@@ -168,8 +172,7 @@ Grade Database::create_grade( Key id ) const {
   try {
     row = grades.get_row( id );
   } catch( std::runtime_error const& ex ) {
-    debug_print( "Can't find Grade with id %d.\n", id );
-    // @ToDo: rethrow?
+    SJ_THROW( "Grade with id " + std::to_string( id ) + " doesn't exist." );
   }
 
   auto const grade     = Grade::string_to_value( row["Grade"] );
@@ -186,8 +189,7 @@ Course Database::create_course( Key id ) const {
   try {
     row = courses.get_row( id );
   } catch( std::runtime_error const& ex ) {
-    debug_print( "Can't find Course with id %d.\n", id );
-    // @ToDo: rethrow?
+    SJ_THROW( "Course with id " + std::to_string( id ) + " doesn't exist." );
   }
 
   auto const name          = row["Name"];
@@ -197,7 +199,7 @@ Course Database::create_course( Key id ) const {
   return { name, ects, instructor_id, id };
 }
 
-Field_Of_Study Database::create_field_of_study(Key id) const {
+Field_Of_Study Database::create_field_of_study( Key id ) const {
   throw_if_not_ready_to_read();
   
   std::map<std::string, std::string> row;
@@ -211,9 +213,47 @@ Field_Of_Study Database::create_field_of_study(Key id) const {
   return { row["Short_name"], row["Full_name"], id };
 }
 
+void Database::add_grade( Grade::Value value, std::string comment,
+                          Key student_index, Key course_id ) {
+  throw_if_not_ready_to_read();
+
+  if( comment.empty() ) {
+    comment = "No comment.";
+  }
+
+  if( !students.does_row_exist( student_index ) ) {
+    SJ_THROW( "Can't add grade: no matching student with index " +
+              std::to_string( student_index ) + "." );
+  }
+  if( !courses.does_row_exist( course_id ) ) {
+    SJ_THROW( "Can't add grade: no matching course with id " +
+              std::to_string( course_id ) + "." );
+  }
+
+  Student student = create_student( student_index );
+  auto student_courses = student.get_enrolled_courses_ids();
+  if( std::find( student_courses.begin(), student_courses.end(), course_id )
+       == student_courses.end() ) {
+       
+    SJ_THROW( "Can't add grade: student " + std::to_string( student_index ) + 
+              " isn't signed up for course " +
+              std::to_string( course_id ) + "." );
+  }
+
+  std::map<std::string, std::string> row;
+
+  row["Course_ID"]  = std::to_string( course_id );
+  row["Student_ID"] = std::to_string( student_index );
+  row["Grade"]   = Grade::value_to_string( value );
+  row["Comment"] = comment;
+
+  grades.add_row( row );
+
+  unsaved_changes = true;
+}
+
 void Database::throw_if_not_ready_to_read() const {
   if( !ready_to_read ) {
-    debug_print( "Database is not ready for reading!\n" );
     SJ_THROW( "Database is not ready for reading!" );
   }
 }

@@ -33,10 +33,12 @@ public:
   [[nodiscard]]
   Field_Of_Study create_field_of_study( Key id ) const; 
 
-  //void add_grade()
+  // Checks if student and course exist, and if student is signed
+  // up for given course.
+  void add_grade( Grade::Value value, std::string comment, 
+                  Key student_index, Key course_id );
 
-  // void add_grade, void add_enrollment...
-
+  // void add_enrollment
 private:
   CSV_File courses;
   CSV_File enrollments;

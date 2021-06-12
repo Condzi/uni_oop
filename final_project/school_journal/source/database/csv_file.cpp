@@ -46,17 +46,52 @@ std::map<std::string, std::string> CSV_File::get_row( s32 key ) const {
   return result;
 }
 
+bool CSV_File::does_row_exist( Key key ) const {
+  auto const begin = data.key.values.cbegin();
+  auto const end   = data.key.values.cend();
+
+  return !(std::find( begin, end, key ) == end);
+}
+
+void CSV_File::add_row( std::map<std::string, std::string> const& row ) {
+  if( !successfull_parsing ) {
+    SJ_THROW( "Can't add_row before a successfull parsing (" + path + ")." );
+  }
+
+  for( auto& column : data.columns ) {
+    std::string str_to_put;
+    try {
+      str_to_put = row.at( column.name ); 
+    } catch( std::exception const& ex ) {
+      // Literally a bug that should be catched in tests. 
+      // That's why we're not removing previously added rows.
+      SJ_THROW( "Can't add_row -- no value for '" + column.name + "'." );
+    }
+
+    column.values.emplace_back( str_to_put );
+  }
+
+  // For simplicity - assuming that the last value
+  // in key column is the biggest one ever.
+  // So, assuming no deletions.
+  auto last_key_value = data.key.values.back();
+  last_key_value++;
+  data.key.values.push_back( last_key_value );
+}
+
 void CSV_File::load_from_file_and_parse() {
   successfull_parsing = false;
 
   std::ifstream file( path );
-  SJ_CHECK_FILE( file, "error after attempting to open '" + path + "'." );
+  if( !file.is_open() ) {
+    SJ_THROW( "Unable to open file '" + path + "' for reading." );
+  }
+  SJ_CHECK_FILE( file, "error after opening '" + path + "' for reading." );
 
   std::vector<std::string> column_names;
   std::string line;
 
   if( std::getline( file, line ) ) {
-    SJ_CHECK_FILE( file, "error after attempting to read first line from '" + path + "'.");
     column_names = split_line( line );
 
     data.key.name = column_names[0];
@@ -77,8 +112,10 @@ void CSV_File::load_from_file_and_parse() {
 
     debug_print( "CSV_File::parse(): found %d columns in '%s'.", column_names.size(), path.c_str() );
   }
+  SJ_CHECK_FILE( file, "Error after reading first line from '" + path + "'.");
 
   auto const expected_number_of_values_in_line = column_names.size();
+  auto const expected_number_of_values_in_lines_str = std::to_string( expected_number_of_values_in_line );
   size_t line_number = 1;
 
   while( std::getline( file, line ) ) {
@@ -91,7 +128,9 @@ void CSV_File::load_from_file_and_parse() {
 
     auto const values_in_line = split_line( line );
     if( values_in_line.size() != expected_number_of_values_in_line ) {
-      SJ_THROW( "number of expected values in line " + line_number_str + " is different." );
+      SJ_THROW( "Number of expected values in file '" + path + 
+                ", line " + line_number_str + " is different from "
+                "expected " + expected_number_of_values_in_lines_str + "." );
     }
 
     auto const key_value = convert_string_to_s32( values_in_line[0] );
@@ -102,14 +141,18 @@ void CSV_File::load_from_file_and_parse() {
     }
   }
   
-  SJ_CHECK_FILE( file, "error reading file from '" + path + "'." );
+  SJ_CHECK_FILE( file, "Error reading file from '" + path + "'." );
 
   successfull_parsing = true;
 }
 
 void CSV_File::save() {
   std::ofstream file( path );
-  SJ_CHECK_FILE( file, "error after attempting to open '" + path + "'." );
+  if( !file.is_open() ) {
+    SJ_THROW( "Unable to open file '" + path + "' for writing." );
+  }
+
+  SJ_CHECK_FILE( file, "Error after opening '" + path + "' for writing." );
 
   // Every column has the same number of rows.
   auto const number_of_value_rows = data.key.values.size();
@@ -122,9 +165,7 @@ void CSV_File::save() {
   }
   line_builder << '\n';
 
-  if( !(file << line_builder.str()) ) {
-    SJ_THROW( "Writing to file failed when writing column names." );
-  }
+  file << line_builder.str();
 
   for( size_t i = 0; i < number_of_value_rows; i++ ) {
     line_builder.str("");
@@ -135,13 +176,13 @@ void CSV_File::save() {
     }
     line_builder << '\n';
 
-    if( !(file << line_builder.str()) ) {
-      SJ_THROW( "Writing to file failed at line " + std::to_string( i ) + "." );
-    }
+    file << line_builder.str();
   }
+
+  SJ_CHECK_FILE( file, "Error after writing to '" + path + "'." );
 }
 
-std::vector<std::string> CSV_File::split_line( std::string line ) {
+std::vector<std::string> CSV_File::split_line( std::string line ) const {
   std::vector<std::string> words;
 
   if( line.empty() ) {

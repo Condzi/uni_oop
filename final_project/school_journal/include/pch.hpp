@@ -39,7 +39,7 @@ using Key = s32;
 #define SJ_THROW( message ) \
 throw std::runtime_error( "File: " __FILE__ \
                           "\nLine: " SJ_STRINGIFY( __LINE__ ) \
-                          "\nwhat(): " + std::string{ (message) } )
+                          "\nInfo: " + std::string{ (message) } )
 
 #define SJ_CHECK_FILE( file, message ) \
 if( (file).bad() ) SJ_THROW( message )

@@ -42,6 +42,7 @@ int main() {
                                             instructor.get_surname().c_str() );
   }
 
+  //db.add_grade( sj::Grade::Value::Four_Half, "Test grade", s.get_key(), s.get_enrolled_courses_ids().front() );
   db.save_to_folder();
 
   std::cin.get();
