@@ -173,6 +173,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\ui\terminal.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\database\course.hpp">
@@ -212,6 +213,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\pch.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\ui\terminal.hpp">
       <SubType>
       </SubType>
     </ClInclude>

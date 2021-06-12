@@ -1,48 +1,43 @@
 #include "pch.hpp"
 
-#include <iostream>
-#include <Windows.h>
+#include "ui/terminal.hpp"
 
+using namespace sj;
 int main() {
-  HANDLE terminal_input = GetStdHandle(STD_INPUT_HANDLE);
-  HANDLE terminal_output = GetStdHandle(STD_OUTPUT_HANDLE);
+  using Input = Terminal::Input_Type;
 
-  constexpr int max_term_height = 256;
-  constexpr int max_term_width = 256;
-  constexpr int buffer_size = 256 + 16*max_term_width*max_term_height;
+  bool run = true;
+  Terminal terminal;
+  s32 x = 0, y = 0;
+  bool moved = false;
 
-  char* buffer = new char[buffer_size];
-  memset( buffer, 0, buffer_size );
+  while( run ) {
+    if( terminal.is_key_pressed( Input::Cursor_Up ) ) {
+      y--;
+      moved = true;
+    }
 
-  bool running = true;
-  while(running) {
-    CONSOLE_SCREEN_BUFFER_INFO terminal;
-    GetConsoleScreenBufferInfo(terminal_output, &terminal);
-    int terminal_width = terminal.srWindow.Right - terminal.srWindow.Left;
-    int terminal_height = terminal.srWindow.Bottom - terminal.srWindow.Top;
+    if( terminal.is_key_pressed( Input::Cursor_Down ) ) {
+      y++;
+      moved = true;
+    }
 
-    //WriteConsoleA( terminal_output, buffer, terminal_width*terminal_height, 0, 0);
+    if( terminal.is_key_pressed( Input::Enter ) ) {
+      x++;
+      moved = true;
+    }
+    if( terminal.is_key_pressed( Input::Escape ) ) {
+      x--;
+      moved = true;
+    }
 
-    while(WaitForSingleObject(terminal_input, 0) == WAIT_OBJECT_0) {
-      INPUT_RECORD record;
-      DWORD record_count = 0;
+    terminal.update();
 
-      ReadConsoleInput(terminal_input, &record, 1, &record_count);
-
-      if(record_count) {
-        if(record.EventType == KEY_EVENT &&
-          record.Event.KeyEvent.bKeyDown &&
-          record.Event.KeyEvent.wRepeatCount == 1) {
-
-          if(record.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) {
-            running = false;
-          }
-          if(record.Event.KeyEvent.wVirtualKeyCode == VK_UP ) {
-            std::cout << "Up" << std::endl;
-          }
-
-        }
-      }
+    if( moved ) {
+      terminal.pen_write( " " );
+      terminal.set_pen_position( x, y );
+      terminal.pen_write( "X" );
+      moved = false;
     }
   }
 }
