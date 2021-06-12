@@ -13,7 +13,7 @@ int main() {
   db.set_folder( "non_prod/" );
   db.load_from_folder();
 
-  auto s = db.create_student( 100101 );
+  auto s = db.create_student( 100103 );
 
   sj::debug_print( "\n\nStudent data:" );
   sj::debug_print( "Name(s): %s | Surname: %s", s.get_names().c_str(), s.get_surname().c_str() );
@@ -43,6 +43,9 @@ int main() {
   }
 
   //db.add_grade( sj::Grade::Value::Four_Half, "Test grade", s.get_key(), s.get_enrolled_courses_ids().front() );
+
+  // db.add_enrollment( 100103, 5 );
+
   db.save_to_folder();
 
   std::cin.get();

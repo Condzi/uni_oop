@@ -252,6 +252,39 @@ void Database::add_grade( Grade::Value value, std::string comment,
   unsaved_changes = true;
 }
 
+void Database::add_enrollment( Key student_index, Key course_id ) {
+  throw_if_not_ready_to_read();
+
+  if( !students.does_row_exist( student_index ) ) {
+    SJ_THROW( "Can't add enrollment: no matching student with index " +
+              std::to_string( student_index ) + "." );
+  }
+  if( !courses.does_row_exist( course_id ) ) {
+    SJ_THROW( "Can't add enrollment: no matching course with id " +
+              std::to_string( course_id ) + "." );
+  }
+
+  Student student = create_student( student_index );
+  auto student_courses = student.get_enrolled_courses_ids();
+  if( !( std::find( student_courses.begin(), student_courses.end(), course_id )
+       == student_courses.end() ) ) {
+       
+    SJ_THROW( "Can't add enrollment: student " 
+              + std::to_string( student_index ) +
+              " already signed up for course " +
+              std::to_string( course_id ) + "." );
+  }
+
+  std::map<std::string, std::string> row;
+
+  row["Course_ID"]  = std::to_string( course_id );
+  row["Student_Index"] = std::to_string( student_index );
+
+  enrollments.add_row( row );
+
+  unsaved_changes = true;
+}
+
 void Database::throw_if_not_ready_to_read() const {
   if( !ready_to_read ) {
     SJ_THROW( "Database is not ready for reading!" );

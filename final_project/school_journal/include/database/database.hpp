@@ -38,7 +38,8 @@ public:
   void add_grade( Grade::Value value, std::string comment, 
                   Key student_index, Key course_id );
 
-  // void add_enrollment
+  void add_enrollment( Key student_index, Key course_id );
+
 private:
   CSV_File courses;
   CSV_File enrollments;
