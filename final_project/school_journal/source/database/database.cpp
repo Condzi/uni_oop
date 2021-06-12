@@ -4,28 +4,31 @@
 
 namespace sj
 {
-void Database::set_folder( std::string const& folder_ ) {
-  // @ToDo: check if folder exist
-  folder = folder_;
+Database::Database() {
+  set_folder( "database/" );
+}
+
+void Database::set_folder( std::string const &folder ) {
+  courses.set_folder( folder );
+  enrollments.set_folder( folder );
+  fields_of_study.set_folder( folder );
+  instructors.set_folder( folder );
+  students.set_folder( folder );
+  grades.set_folder( folder );
 }
 
 void Database::load_from_folder() {
+  ready_to_read = false;
   try {
-    #define SJ_LOAD_TABLE( x )    \
-      (x).set_path( folder + #x ".csv" );  \
-      (x).load_from_file_and_parse()
-
-    SJ_LOAD_TABLE( courses );
-    SJ_LOAD_TABLE( enrollments );
-    SJ_LOAD_TABLE( fields_of_study );
-    SJ_LOAD_TABLE( grades );
-    SJ_LOAD_TABLE( instructors );
-    SJ_LOAD_TABLE( students );
-
-    #undef SJ_LOAD_TABLE
+    courses.load_and_parse();
+    enrollments.load_and_parse();
+    fields_of_study.load_and_parse();
+    grades.load_and_parse();
+    instructors.load_and_parse();
+    students.load_and_parse();
   } catch( std::runtime_error const& ex ) {
     debug_print(" !!! Exception thrown while loading from folder:\n%s\n", ex.what() );
-    // @ToDo: rethrow exception, with different desc?
+    throw std::runtime_error{ex};
   }
 
   ready_to_read = true;
@@ -35,24 +38,17 @@ void Database::save_to_folder() {
   if( !unsaved_changes ) {
     return;
   }
-  // @Todo: debug only
-  folder = "non_prod/";
 
   try {
-   #define SJ_SAVE_TABLE( x )    \
-      (x).set_path( folder + #x ".csv" );  \
-      (x).save()
-
-    SJ_SAVE_TABLE( courses );
-    SJ_SAVE_TABLE( enrollments );
-    SJ_SAVE_TABLE( fields_of_study );
-    SJ_SAVE_TABLE( grades );
-    SJ_SAVE_TABLE( instructors );
-    SJ_SAVE_TABLE( students );
-
-    #undef SJ_SAVE_TABLE
+    courses.save();
+    enrollments.save();
+    fields_of_study.save();
+    grades.save();
+    instructors.save();
+    students.save();
   } catch( std::runtime_error const& ex) {
     debug_print( " !!! Exception thrown while saving to folder:\n%s\n", ex.what() );
+    throw ex;
   }
 
   unsaved_changes = false;
@@ -77,27 +73,23 @@ Student Database::create_student( Key index ) const {
   // 2. Find grades.
 
   // 1.1. Find all enrollments for this student.
-  auto const& enrollment_data = enrollments.get_data();
-  std::vector<s32> enrolled_courses_keys;
-  for( auto const& column : enrollment_data.columns ) {
-    if( column.name == "Student_Index" ) {
-      s32 idx = 0;
-      for( auto const& enrollment_index : column.values ) {
-        auto const enrollment_index_as_s32 = 
-                              convert_string_to_s32( enrollment_index );
-        if( enrollment_index_as_s32 == index ) {
-          enrolled_courses_keys.push_back( enrollment_data.key.values[idx] );
-        }
-
-        idx++;
-      }
-      break;
+  auto const& enrollment_student_ids = enrollments.get_column( "Student_Index" );
+  std::vector<s32> courses_keys;
+ 
+  s32 idx = 0;
+  for( auto const& e_index : enrollment_student_ids.content ) {
+    auto const e_index_as_s32 = convert_string_to_s32( e_index );
+    if( e_index_as_s32 == index ) {
+      courses_keys.push_back( enrollments.get_key_column().content[idx] );
     }
+  
+    idx++;
   }
+
 
   // 1.2. Get courses keys from enrollments table.
   std::vector<Key> s_courses;
-  for( auto key : enrolled_courses_keys ) {
+  for( auto key : courses_keys ) {
     row = enrollments.get_row( key );
     s_courses.push_back( convert_string_to_s32( row["Course_ID"] ) );
   }
@@ -108,18 +100,13 @@ Student Database::create_student( Key index ) const {
     // Not really a bug -- just a student before enrollments.
     debug_print( "Student %d has no courses!\n", index );
   } else {
-    for( auto const& column : grades.get_data().columns ) {
-      if( column.name == "Student_ID" ) {
-        s32 idx = 0;
-        for( auto const& student_index : column.values ) {
-          if( convert_string_to_s32( student_index ) == index ) {
-            s_grades_ids.push_back( grades.get_data().key.values[idx] );
-          }
-
-          idx++;
-        }
-        break;
+    auto const& grades_student_ids = grades.get_column( "Student_ID" );
+    idx = 0;
+    for( auto const& g_index : grades_student_ids.content ) {
+      if( convert_string_to_s32( g_index ) == index ) {
+         s_grades_ids.push_back( grades.get_key_column().content[idx] );
       }
+      idx++;
     }
   }
 
@@ -145,21 +132,15 @@ Instructor Database::create_instructor( Key id ) const {
 
   std::vector<Key> i_courses_ids;
 
-  auto const& courses_data = courses.get_data();
-  for( auto const& column : courses_data.columns ) {
-    if( column.name == "Instructor" ) {
-      s32 idx = 0;
-      for( auto const& instructor_id : column.values ) {
-        auto const instructor_id_as_s32 = 
-                              convert_string_to_s32( instructor_id );
-        if( instructor_id_as_s32 == id ) {
-          i_courses_ids.push_back( courses_data.key.values[idx] );
-        }
-
-        idx++;
-      }
-      break;
+  auto const& instructor_id_courses = courses.get_column( "Instructor" );
+  s32 idx = 0;
+  for( auto const& i_id : instructor_id_courses.content ) {
+    auto const i_id_as_s32 = convert_string_to_s32( i_id );
+    if( i_id_as_s32 == id ) {
+      i_courses_ids.push_back( courses.get_key_column().content[idx] );
     }
+
+    idx++;
   }
 
   return { i_names, i_surname, std::move( i_courses_ids ), id };
@@ -219,6 +200,9 @@ void Database::add_grade( Grade::Value value, std::string comment,
 
   if( comment.empty() ) {
     comment = "No comment.";
+  } else {
+    // Spaces in comments would cause problems.
+    std::replace( comment.begin(), comment.end(), ',', ' ' );
   }
 
   if( !students.does_row_exist( student_index ) ) {

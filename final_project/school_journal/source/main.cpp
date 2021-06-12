@@ -42,10 +42,11 @@ int main() {
                                             instructor.get_surname().c_str() );
   }
 
-  //db.add_grade( sj::Grade::Value::Four_Half, "Test grade", s.get_key(), s.get_enrolled_courses_ids().front() );
+  //db.add_grade( sj::Grade::Value::Five_Half, "Second test grade! commas>',,,,,'<", s.get_key(), s.get_enrolled_courses_ids().front() );
 
-  // db.add_enrollment( 100103, 5 );
+  //db.add_enrollment( 100103, 5 );
 
+  db.set_folder( "non_prod/" );
   db.save_to_folder();
 
   std::cin.get();

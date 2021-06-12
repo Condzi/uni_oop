@@ -161,8 +161,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="source\database\course.cpp" />
-    <ClCompile Include="source\database\instructor.cpp" />
     <ClCompile Include="source\database\csv_file.cpp" />
+    <ClCompile Include="source\database\instructor.cpp" />
+    <ClCompile Include="source\database\table.cpp" />
     <ClCompile Include="source\database\database.cpp" />
     <ClCompile Include="source\database\field_of_study.cpp" />
     <ClCompile Include="source\database\grade.cpp" />
@@ -179,6 +180,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\database\csv_file.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\database\table.hpp">
       <SubType>
       </SubType>
     </ClInclude>

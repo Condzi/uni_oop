@@ -1,7 +1,6 @@
 #pragma once
 
-#include "csv_file.hpp"
-
+#include "table.hpp"
 #include "grade.hpp"
 #include "student.hpp"
 #include "instructor.hpp"
@@ -13,7 +12,9 @@ namespace sj
 class Database final
 {
 public:
-  void set_folder( std::string const& folder_ );
+  Database();
+
+  void set_folder( std::string const& folder );
 
   void load_from_folder();
   void save_to_folder();
@@ -41,15 +42,14 @@ public:
   void add_enrollment( Key student_index, Key course_id );
 
 private:
-  CSV_File courses;
-  CSV_File enrollments;
-  CSV_File fields_of_study;
-  CSV_File grades;
-  CSV_File instructors;
-  CSV_File students;
+  Table courses{ "courses" };
+  Table enrollments{ "enrollments" };
+  Table fields_of_study{ "fields_of_study" };
+  Table grades{ "grades" };
+  Table instructors{ "instructors" };
+  Table students{ "students" };
 
-  std::string folder;
-  bool unsaved_changes = false;
+  bool unsaved_changes = true;
   bool ready_to_read = false;
 
   void throw_if_not_ready_to_read() const;
