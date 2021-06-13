@@ -61,6 +61,12 @@ void Terminal::wait_for_enter() const {
   std::cin.get();
 }
 
+void Terminal::reset_input_state() {
+  for( auto& b : input_state ) {
+    b = false;
+  }
+}
+
 void Terminal::update() {
   update_dimensions();
   update_input_state();
@@ -77,7 +83,7 @@ void Terminal::update_dimensions() {
 }
 
 void Terminal::update_input_state() {
-  std::memset( input_state, 0, sizeof( bool ) * 4 );
+  reset_input_state();
 
   while( WaitForSingleObject( input, 0 ) == WAIT_OBJECT_0 ) {
     INPUT_RECORD record;

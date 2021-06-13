@@ -39,7 +39,10 @@ void App::run() {
 
     if( auto new_state_id = current_state->update();
         new_state_id ) {
-
+        
+      if( *new_state_id == State::Type::Exit ) {
+        return;
+      }
       /*
       delete current_state;
       current_state = make_state( *new_state_id );

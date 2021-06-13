@@ -64,6 +64,24 @@ std::optional<State::Type> User_Selection::update() {
     return {};
   }
 
+  if( terminal.is_key_pressed( Terminal::Input_Type::Escape ) ) {
+    terminal.set_pen_position( 4, 9 );
+    terminal.pen_write( "\x1B[4mAre you sure you want to exit?\x1B[24m" );
+
+    terminal.reset_input_state();
+    while( !terminal.is_key_pressed( Terminal::Input_Type::Enter ) && 
+           !terminal.is_key_pressed( Terminal::Input_Type::Escape ) ) {
+      terminal.update();
+    }
+
+    if( terminal.is_key_pressed( Terminal::Input_Type::Enter ) ) {
+      return State::Type::Exit;
+    }
+
+    // Redraw the screen if user don't want to exit.
+    on_switch();
+  }
+
   redraw_cursor();
 
   return {};

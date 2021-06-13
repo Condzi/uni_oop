@@ -28,7 +28,6 @@ private:
   bool try_to_set_instructor( Key id );
 
   void handle_up_down_input();
-
   void redraw_cursor();
 };
 }
