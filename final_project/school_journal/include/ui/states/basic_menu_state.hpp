@@ -1,12 +1,13 @@
 #pragma once
 
-#include "state.hpp"
+#include "ui/state.hpp"
 
 namespace sj
 {
 class Basic_Menu_State : public State {
 public:
-  Basic_Menu_State( Terminal& terminal_, Database& database_, App& app_, s32 options_count_ );
+  Basic_Menu_State( Terminal& terminal_, Database& database_, App& app_, 
+                    s32 options_count_ );
   virtual ~Basic_Menu_State() = default;
 
 protected:
@@ -31,6 +32,8 @@ protected:
   void ask_for_input( std::string const& label, T& data );
 
   void prompt_error( std::string const& label );
+  [[nodiscard]]
+  bool yes_no_prompt( std::string const& label );
 
 private:
   static inline constexpr Coords TITLE_POS{ 10, 2 };

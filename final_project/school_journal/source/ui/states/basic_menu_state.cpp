@@ -1,6 +1,6 @@
 #include "pch.hpp"
 
-#include "ui/basic_menu_state.hpp"
+#include "ui/states/basic_menu_state.hpp"
 
 namespace sj
 {
@@ -83,5 +83,20 @@ void Basic_Menu_State::prompt_error( std::string const& label ) {
   terminal.move_pen( {0, 1} );
   terminal.pen_write( "Press Enter to continue." );
   terminal.wait_for_enter();
+}
+
+bool Basic_Menu_State::yes_no_prompt( std::string const& label ) {
+  char c;
+  ask_for_input("\x1B[4m" + label + "\x1B[24m [Y/N]: ", c );
+
+  if( c == 'Y' || c == 'y' ) {
+    return true;
+  }
+
+  terminal.clear_screen();
+  display_options();
+  display_cursor();
+
+  return false;
 }
 }

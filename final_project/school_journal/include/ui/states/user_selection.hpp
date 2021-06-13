@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ui/basic_menu_state.hpp"
+#include "ui/states/basic_menu_state.hpp"
 
 namespace sj
 {

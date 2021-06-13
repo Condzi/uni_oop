@@ -1,6 +1,7 @@
 #include "pch.hpp"
 
 #include "ui/states/user_selection.hpp"
+#include "ui/states/student_overview.hpp"
 #include "ui/app.hpp"
 
 namespace sj
@@ -25,15 +26,8 @@ State* User_Selection::update() {
   auto input = update_input();
 
   if( input == -1 ) {
-    char c;
-    ask_for_input("\x1B[4mAre you sure you want to exit?\x1B[24m [Y/N]: ", c );
-
-    if( c == 'Y' || c == 'y' ) {
+    if( yes_no_prompt( "Are you sure you want to exit?" ) ) {
       app.request_quit();
-    } else {
-      terminal.clear_screen();
-      display_options();
-      display_cursor();
     }
   } else if ( input == 1 ) {
     Key id;
@@ -42,7 +36,7 @@ State* User_Selection::update() {
     switch( current_option ) {
       case 0: {
         if( check_if_student_exists( id ) ) {
-          // @ToDo
+          return new Student_Overview{ terminal, database, app, id };
         }
       } break;
       case 1: {
@@ -76,12 +70,6 @@ bool User_Selection::check_if_student_exists( Key index ) {
    }
 
    auto s = database.create_student( index );
-   // @ToDo: remove me
-   prompt_error( "Hello, " + s.get_names() + "!" );
-   terminal.clear_screen();
-   display_options();
-   display_cursor();
-
    return true;
 }
 
