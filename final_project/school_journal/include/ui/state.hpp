@@ -9,15 +9,6 @@ class App;
 
 class State {
 public:
-  enum class Type {
-    User_Selection,
-    Student,
-    Instructor,
-    Enrollments,
-    // Just to inform the app to exit.
-    Exit
-  };
-
   State( Terminal& terminal_, Database& database_, App& app_ );
   virtual ~State() = default;
 
@@ -26,7 +17,7 @@ public:
 
   // Optionally, returns state to which wants to change.
   [[nodiscard]] virtual 
-  std::optional<State::Type> update() = 0;
+  State* update() = 0;
 
 protected:
   Terminal& terminal;

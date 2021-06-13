@@ -7,172 +7,105 @@ namespace sj
 {
 User_Selection::User_Selection( Terminal& terminal_, Database& database_,
                                 App& app_ ) :
-  State( terminal_, database_, app_ )
+  Basic_Menu_State( terminal_, database_, app_, 3 )
 {}
 
 void User_Selection::on_switch() {
-  selected_option = 0;
-  terminal.clear_screen();
+  title = "Select user";
+  options_labels[0] = "Student";
+  options_labels[1] = "Instructor";
+  options_labels[2] = "Enrollments";
 
-  terminal.set_pen_position( 10, 2 );
-  terminal.pen_write( "Select User" );
-
-  terminal.set_pen_position( 6, 4 );
-  terminal.pen_write( "Student" );
-  terminal.move_pen( 0, 1 );
-  terminal.pen_write( "Instructor" );
-  terminal.move_pen( 0, 1 );
-  terminal.pen_write( "Student (enrollments)" );
-
-  terminal.set_pen_position( cursor_start_pos.x, cursor_start_pos.y );
-  terminal.pen_write( ">" );
+  display_options();
 }
 
-std::optional<State::Type> User_Selection::update() {
+State* User_Selection::update() {
+  display_cursor();
 
-  handle_up_down_input();
+  auto input = update_input();
 
-  if( terminal.is_key_pressed( Terminal::Input_Type::Enter ) ) {
-    terminal.set_pen_position( 4, 9 );
-    terminal.pen_write( "Type the person's ID: " );
-    
+  if( input == -1 ) {
+    char c;
+    ask_for_input("\x1B[4mAre you sure you want to exit?\x1B[24m [Y/N]: ", c );
+
+    if( c == 'Y' || c == 'y' ) {
+      app.request_quit();
+    } else {
+      terminal.clear_screen();
+      display_options();
+      display_cursor();
+    }
+  } else if ( input == 1 ) {
     Key id;
-    std::cin >> id;
-    
-    switch( selected_option ) {
+    ask_for_input( "Specify ID/Index: ", id );
+
+    switch( current_option ) {
       case 0: {
-        if( try_to_set_student( id ) ) {
-          return State::Type::Student;
+        if( check_if_student_exists( id ) ) {
+          // @ToDo
         }
       } break;
-
       case 1: {
-        if( try_to_set_instructor( id ) ) {
-          return State::Type::Instructor;
+        if( check_if_instructor_exists( id ) ) {
+          // @ToDo
         }
       } break;
-
       case 2: {
-      if( try_to_set_student( id ) ) {
-          return State::Type::Enrollments;
+        if( check_if_student_exists( id ) ) {
+          // @ToDo
         }
-      } break;
-
-      default: SJ_THROW( "Wrong selected_option value!" );
+      }
     }
-
-    return {};
   }
 
-  if( terminal.is_key_pressed( Terminal::Input_Type::Escape ) ) {
-    terminal.set_pen_position( 4, 9 );
-    terminal.pen_write( "\x1B[4mAre you sure you want to exit?\x1B[24m" );
-
-    terminal.reset_input_state();
-    while( !terminal.is_key_pressed( Terminal::Input_Type::Enter ) && 
-           !terminal.is_key_pressed( Terminal::Input_Type::Escape ) ) {
-      terminal.update();
-    }
-
-    if( terminal.is_key_pressed( Terminal::Input_Type::Enter ) ) {
-      return State::Type::Exit;
-    }
-
-    // Redraw the screen if user don't want to exit.
-    on_switch();
-  }
-
-  redraw_cursor();
-
-  return {};
+  return nullptr;
 }
 
-bool User_Selection::try_to_set_student( Key index ) {
+bool User_Selection::check_if_student_exists( Key index ) {
    try {
      auto s = database.create_student( index );
    }
    catch( ... ) {
+     prompt_error( "Student with index " + std::to_string( index ) +
+     " has not been found." );
      terminal.clear_screen();
-     terminal.set_pen_position( 5, 5 );
-     terminal.pen_write(
-     "Student with index " + std::to_string( index ) +
-     " has not been found. Try again.");
-     terminal.wait_for_enter();
-     // To redraw the screen UI.
-     on_switch();
+     display_options();
+     display_cursor();
+
      return false;
    }
 
-   app.set_user_id( index );
-   app.set_user_type( App::User_Type::Student );
-
-   terminal.clear_screen();
-   terminal.set_pen_position( 5, 5 );
    auto s = database.create_student( index );
-   terminal.pen_write( "Hello, " + s.get_names() + "!" );
-   terminal.wait_for_enter();
+   // @ToDo: remove me
+   prompt_error( "Hello, " + s.get_names() + "!" );
+   terminal.clear_screen();
+   display_options();
+   display_cursor();
 
    return true;
 }
 
-bool User_Selection::try_to_set_instructor( Key id ) {
+bool User_Selection::check_if_instructor_exists( Key id ) {
    try {
-     auto s = database.create_instructor( id );
+     auto i = database.create_instructor( id );
    }
    catch( ... ) {
+     prompt_error( "Instructor with ID " + std::to_string( id ) +
+     " has not been found." );
      terminal.clear_screen();
-     terminal.set_pen_position( 5, 5 );
-     terminal.pen_write(
-     "Instructor with ID " + std::to_string( id ) +
-     " has not been found. Try again.");
-     terminal.wait_for_enter();
-     // To redraw the screen UI.
-     on_switch();
+     display_options();
+     display_cursor();
+
      return false;
    }
 
-   app.set_user_id( id );
-   app.set_user_type( App::User_Type::Instructor );
-
-   terminal.clear_screen();
-   terminal.set_pen_position( 5, 5 );
    auto s = database.create_instructor( id );
-   terminal.pen_write( "Welcome, " + s.get_names() + "." );
-   terminal.wait_for_enter();
+   // @ToDo: remove me
+   prompt_error( "Welcome, " + s.get_names() + "." );
+   terminal.clear_screen();
+   display_options();
+   display_cursor();
 
    return true;
-}
-
-void User_Selection::handle_up_down_input() {
-  if( terminal.is_key_pressed( Terminal::Input_Type::Cursor_Up ) ) {
-    terminal.pen_write( " " );
-    cursor_needs_redrawing = true;
-
-    if( selected_option == 0 ) {
-      selected_option = 2;
-    } else {
-      selected_option--;
-    }
-  }
-
-  if( terminal.is_key_pressed( Terminal::Input_Type::Cursor_Down ) ) {
-    terminal.pen_write( " " );
-    cursor_needs_redrawing = true;
-
-    if( selected_option == 2 ) {
-      selected_option = 0;
-    } else {
-      selected_option++;
-    }
-  }
-}
-
-void User_Selection::redraw_cursor() {
-  if( cursor_needs_redrawing ) {
-    terminal.set_pen_position( cursor_start_pos.x, 
-                               cursor_start_pos.y + selected_option );
-    terminal.pen_write( ">" );
-    cursor_needs_redrawing = false;
-  }
 }
 }

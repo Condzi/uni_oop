@@ -174,6 +174,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\ui\app.cpp" />
+    <ClCompile Include="source\ui\basic_menu_state.cpp" />
     <ClCompile Include="source\ui\state.cpp" />
     <ClCompile Include="source\ui\states\user_selection.cpp" />
     <ClCompile Include="source\ui\terminal.cpp" />
@@ -220,6 +221,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\ui\app.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\ui\basic_menu_state.hpp">
       <SubType>
       </SubType>
     </ClInclude>

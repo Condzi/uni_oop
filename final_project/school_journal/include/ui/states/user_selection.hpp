@@ -1,33 +1,23 @@
 #pragma once
 
-#include "ui/state.hpp"
+#include "ui/basic_menu_state.hpp"
 
 namespace sj
 {
-class User_Selection final : public State {
+class User_Selection final : public Basic_Menu_State {
 public:
   User_Selection( Terminal& terminal_, Database& database_, App& app_ );
 
   void on_switch() override;
 
   [[nodiscard]]
-  std::optional<State::Type> update() override;
+  State* update() override;
 
 private:
-  bool cursor_needs_redrawing = true;
-  s32 selected_option = 0;
-  struct {
-    s32 x = 4;
-    s32 y = 4;
-  } const cursor_start_pos;
+  [[nodiscard]]
+  bool check_if_student_exists( Key index );
 
   [[nodiscard]]
-  bool try_to_set_student( Key index );
-
-  [[nodiscard]]
-  bool try_to_set_instructor( Key id );
-
-  void handle_up_down_input();
-  void redraw_cursor();
+  bool check_if_instructor_exists( Key id );
 };
 }

@@ -4,6 +4,7 @@
   common types or STD library includes.
 */
 
+#include <array>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -35,8 +36,11 @@ using s64 = std::int64_t;
 using f32 = float;
 using f64 = double;
 
-// @ToDo: use this everywhere
 using Key = s32;
+
+struct Coords final {
+  s32 x = 0, y = 0;
+};
 
 #define SJ_STRINGIFY_IMPL( x ) #x
 #define SJ_STRINGIFY( x ) SJ_STRINGIFY_IMPL( x )

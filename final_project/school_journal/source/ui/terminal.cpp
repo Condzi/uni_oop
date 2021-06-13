@@ -26,29 +26,27 @@ void Terminal::set_title( std::string const& title ) {
   SetConsoleTitleA( title.c_str() );
 }
 
-void Terminal::set_pen_position( s32 x, s32 y ) {
-  pen_position.x = std::clamp( x, 0, width );
-  pen_position.y = std::clamp( y, 0, height );
+void Terminal::set_pen_coords( Coords coords ) {
+  pen_coords.x = std::clamp( coords.x, 0, width );
+  pen_coords.y = std::clamp( coords.y, 0, height );
 }
 
-void Terminal::move_pen( s32 dx, s32 dy ) {
-  set_pen_position( pen_position.x + dx, pen_position.y + dy );
+void Terminal::move_pen( Coords dt ) {
+  dt.x += pen_coords.x;
+  dt.y += pen_coords.y;
+  set_pen_coords( dt );
 }
 
-s32 Terminal::get_pen_x() const {
-  return pen_position.x;
+Coords Terminal::get_pen_coords() const {
+  return pen_coords;
 }
 
-s32 Terminal::get_pen_y() const {
-  return pen_position.y;
-}
-
-bool Terminal::is_key_pressed( Input_Type type ) {
+bool Terminal::is_key_pressed( Input type ) const {
   return input_state[static_cast<s32>( type )];
 }
 
 void Terminal::pen_write( std::string const& text ) const {
-  std::cout << "\x1B[" << pen_position.y << ";" << pen_position.x << "H";
+  std::cout << "\x1B[" << pen_coords.y << ";" << pen_coords.x << "H";
   std::cout << text;
 }
 
@@ -98,16 +96,16 @@ void Terminal::update_input_state() {
 
         switch( record.Event.KeyEvent.wVirtualKeyCode ) {
         case VK_UP: {
-          input_state[static_cast<s32>(Input_Type::Cursor_Up)] = true;
+          input_state[static_cast<s32>(Input::Cursor_Up)] = true;
         } break;
         case VK_DOWN: {
-          input_state[static_cast<s32>(Input_Type::Cursor_Down)] = true;
+          input_state[static_cast<s32>(Input::Cursor_Down)] = true;
         } break;
         case VK_RETURN: {
-          input_state[static_cast<s32>(Input_Type::Enter)] = true;
+          input_state[static_cast<s32>(Input::Enter)] = true;
         } break;
         case VK_ESCAPE: {
-          input_state[static_cast<s32>(Input_Type::Escape)] = true;
+          input_state[static_cast<s32>(Input::Escape)] = true;
         } break;
         }
       }
