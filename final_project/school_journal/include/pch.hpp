@@ -50,7 +50,7 @@ throw std::runtime_error( "File: " __FILE__ \
 if( (file).bad() ) SJ_THROW( message )
 
 
-constexpr bool ENABLE_DEBUG_PRINT = true;
+constexpr bool ENABLE_DEBUG_PRINT = false;
 
 template <typename ...TArgs>
 void debug_print( char const* fmt, TArgs ...args ) {

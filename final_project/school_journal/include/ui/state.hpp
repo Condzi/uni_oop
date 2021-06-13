@@ -5,9 +5,11 @@
 
 namespace sj
 {
+class App;
+
 class State {
 public:
-  enum Type {
+  enum class Type {
     User_Selection,
     Student,
     Instructor,
@@ -16,7 +18,7 @@ public:
     Exit
   };
 
-  State( Terminal& terminal_, Database& database_ );
+  State( Terminal& terminal_, Database& database_, App& app_ );
   virtual ~State() = default;
 
   virtual 
@@ -29,5 +31,6 @@ public:
 protected:
   Terminal& terminal;
   Database& database;
+  App& app;
 };
 }

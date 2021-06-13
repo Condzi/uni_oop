@@ -3,6 +3,7 @@
 #include "ui/terminal.hpp"
 
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <Windows.h>
 
 namespace sj
@@ -11,8 +12,14 @@ Terminal::Terminal() :
   input( GetStdHandle( STD_INPUT_HANDLE ) ),
   output( GetStdHandle( STD_OUTPUT_HANDLE ) )
 {
+  // Set text color to bright white
+  std::cout << "\x1B[97m";
+  // Set background color to black
+  std::cout << "\x1B[40m";
+
   update_dimensions();
   set_title( "Title" );
+  clear_screen();
 }
 
 void Terminal::set_title( std::string const& title ) {
@@ -47,6 +54,11 @@ void Terminal::pen_write( std::string const& text ) const {
 
 void Terminal::clear_screen() const {
   system( "cls" );
+}
+
+void Terminal::wait_for_enter() const {
+  std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
+  std::cin.get();
 }
 
 void Terminal::update() {
