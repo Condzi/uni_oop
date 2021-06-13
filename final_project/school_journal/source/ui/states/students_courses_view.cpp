@@ -2,6 +2,7 @@
 
 #include "ui/states/student_courses_view.hpp"
 #include "ui/states/student_overview.hpp"
+#include "ui/states/student_grades_view.hpp"
 
 namespace sj
 {
@@ -29,7 +30,7 @@ Student_Courses_View::Student_Courses_View( Terminal& terminal_,
   index( index_ ),
   no_courses( !has_courses( index, database ) )
 {
-  terminal.set_title( "User_Selection -> Student_Overview ->"
+  terminal.set_title( "User_Selection -> Student_Overview -> "
                       "Student_Courses_View" );
 }
 
@@ -39,8 +40,8 @@ void Student_Courses_View::on_switch() {
   if( no_courses ) {
     options_labels[0] = "No enrolled courses found.";
   } else {
-    auto const student     = database.create_student( index );
-    auto const courses_ids = student.get_enrolled_courses_ids();
+    auto const student      = database.create_student( index );
+    auto const& courses_ids = student.get_enrolled_courses_ids();
 
     for( size_t i = 0; i < courses_ids.size(); i++ ) {
       auto course = database.create_course( courses_ids[i] );
@@ -62,13 +63,17 @@ State* Student_Courses_View::update() {
   auto input = update_input();
 
   if( input == -1 ) {
-    if( yes_no_prompt( "Are you sure you want to return to Student Overview?" )) {
+    if( yes_no_prompt( "Are you sure you want to return "
+                       "to the student overview?" ) ) {
       return new Student_Overview{ terminal, database, app, index };
     }
   }
 
   if( input == 1 && !no_courses ) {
-    // @ToDo: create new student grades view for courses_ids[current_option]
+    auto student = database.create_student( index );
+    auto course_id = student.get_enrolled_courses_ids()[current_option];
+
+    return new Student_Grades_View{ terminal, database, app, index, course_id };
   }
 
   display_cursor();

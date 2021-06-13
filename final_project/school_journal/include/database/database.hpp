@@ -49,7 +49,7 @@ private:
   Table instructors{ "instructors" };
   Table students{ "students" };
 
-  bool unsaved_changes = true;
+  bool unsaved_changes = false;
   bool ready_to_read = false;
 
   void throw_if_not_ready_to_read() const;
