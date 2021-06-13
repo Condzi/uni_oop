@@ -1,6 +1,7 @@
 #include "pch.hpp"
 
 #include "ui/states/student_overview.hpp"
+#include "ui/states/student_data_view.hpp"
 #include "ui/states/user_selection.hpp"
 
 namespace sj
@@ -10,7 +11,9 @@ Student_Overview::Student_Overview( Terminal& terminal_, Database& database_,
   Basic_Menu_State{ terminal_, database_, app_, 2 },
   index( index_ ),
   student{ database.create_student( index ) }
-{}
+{
+  terminal.set_title( "User_Selection -> Student_Overview" );
+}
 
 void Student_Overview::on_switch() {
   title = "Hello, " + student.get_names() + "!";
@@ -34,7 +37,7 @@ State* Student_Overview::update() {
   if( input == 1 ) {
     switch( current_option ) {
       case 0: {
-        // @ToDo: student data view
+        return new Student_Data_View{ terminal, database, app, index };
       } break;
       case 1: {
         // @ToDo courses (and grades) view

@@ -176,6 +176,7 @@
     <ClCompile Include="source\ui\app.cpp" />
     <ClCompile Include="source\ui\states\basic_menu_state.cpp" />
     <ClCompile Include="source\ui\state.cpp" />
+    <ClCompile Include="source\ui\states\student_data_view.cpp" />
     <ClCompile Include="source\ui\states\student_overview.cpp" />
     <ClCompile Include="source\ui\states\user_selection.cpp" />
     <ClCompile Include="source\ui\terminal.cpp" />
@@ -230,6 +231,10 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\ui\state.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\ui\states\student_data_view.hpp">
       <SubType>
       </SubType>
     </ClInclude>

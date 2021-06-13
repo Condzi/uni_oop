@@ -33,7 +33,6 @@ public:
   void clear_screen() const;
 
   void wait_for_enter() const;
-
   void reset_input_state();
   
   void update();

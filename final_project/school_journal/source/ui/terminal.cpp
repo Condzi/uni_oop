@@ -18,7 +18,6 @@ Terminal::Terminal() :
   std::cout << "\x1B[40m";
 
   update_dimensions();
-  set_title( "Title" );
   clear_screen();
 }
 

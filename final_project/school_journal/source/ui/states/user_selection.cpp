@@ -9,7 +9,9 @@ namespace sj
 User_Selection::User_Selection( Terminal& terminal_, Database& database_,
                                 App& app_ ) :
   Basic_Menu_State( terminal_, database_, app_, 3 )
-{}
+{
+  terminal.set_title( "User_Selection" );
+}
 
 void User_Selection::on_switch() {
   title = "Select user";
