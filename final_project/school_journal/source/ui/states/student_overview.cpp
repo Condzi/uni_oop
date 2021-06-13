@@ -3,6 +3,7 @@
 #include "ui/states/student_overview.hpp"
 #include "ui/states/student_data_view.hpp"
 #include "ui/states/user_selection.hpp"
+#include "ui/states/student_courses_view.hpp"
 
 namespace sj
 {
@@ -40,7 +41,7 @@ State* Student_Overview::update() {
         return new Student_Data_View{ terminal, database, app, index };
       } break;
       case 1: {
-        // @ToDo courses (and grades) view
+        return new Student_Courses_View{ terminal, database, app, index };
       } break;
     }
   }
