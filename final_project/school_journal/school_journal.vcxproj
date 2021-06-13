@@ -173,6 +173,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='release|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='debug|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="source\ui\app.cpp" />
+    <ClCompile Include="source\ui\state.cpp" />
+    <ClCompile Include="source\ui\states\user_selection.cpp" />
     <ClCompile Include="source\ui\terminal.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -213,6 +216,18 @@
       </SubType>
     </ClInclude>
     <ClInclude Include="include\pch.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\ui\app.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\ui\state.hpp">
+      <SubType>
+      </SubType>
+    </ClInclude>
+    <ClInclude Include="include\ui\states\user_selection.hpp">
       <SubType>
       </SubType>
     </ClInclude>

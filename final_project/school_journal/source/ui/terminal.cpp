@@ -24,6 +24,10 @@ void Terminal::set_pen_position( s32 x, s32 y ) {
   pen_position.y = std::clamp( y, 0, height );
 }
 
+void Terminal::move_pen( s32 dx, s32 dy ) {
+  set_pen_position( pen_position.x + dx, pen_position.y + dy );
+}
+
 s32 Terminal::get_pen_x() const {
   return pen_position.x;
 }
@@ -36,12 +40,12 @@ bool Terminal::is_key_pressed( Input_Type type ) {
   return input_state[static_cast<s32>( type )];
 }
 
-void Terminal::pen_write( std::string const& text ) {
+void Terminal::pen_write( std::string const& text ) const {
   std::cout << "\x1B[" << pen_position.y << ";" << pen_position.x << "H";
   std::cout << text;
 }
 
-void Terminal::clear_screen() {
+void Terminal::clear_screen() const {
   system( "cls" );
 }
 
@@ -49,6 +53,9 @@ void Terminal::update() {
   update_dimensions();
   update_input_state();
 }
+
+// Input and dimensions code is based on
+// https://github.com/cmuratori/termbench/blob/main/termbench.cpp
 
 void Terminal::update_dimensions() {
   CONSOLE_SCREEN_BUFFER_INFO terminal;

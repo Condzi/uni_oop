@@ -16,11 +16,12 @@ public:
   Terminal();
   Terminal( Terminal const& ) = delete;
   Terminal( Terminal&& ) = delete;
-  Terminal& operator=(Terminal const&) = delete;
-  Terminal&& operator=(Terminal&&) = delete;
+  Terminal& operator=( Terminal const& ) = delete;
+  Terminal&& operator=( Terminal&& ) = delete;
 
   void set_title( std::string const& title );
   void set_pen_position( s32 x, s32 y );
+  void move_pen( s32 dx, s32 dy );
 
   [[nodiscard]]
   s32 get_pen_x() const;
@@ -31,8 +32,8 @@ public:
   [[nodiscard]]
   bool is_key_pressed( Input_Type type );
 
-  void pen_write( std::string const& text );
-  void clear_screen();
+  void pen_write( std::string const& text ) const;
+  void clear_screen() const;
   
   void update();
 
