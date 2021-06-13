@@ -53,27 +53,6 @@ throw std::runtime_error( "File: " __FILE__ \
 #define SJ_CHECK_FILE( file, message ) \
 if( (file).bad() ) SJ_THROW( message )
 
-
-constexpr bool ENABLE_DEBUG_PRINT = false;
-
-template <typename ...TArgs>
-void debug_print( char const* fmt, TArgs ...args ) {
-  if constexpr ( ENABLE_DEBUG_PRINT )
-  {
-    if constexpr ( sizeof...(TArgs) == 0 ){
-      std::puts( fmt );
-    } else {
-      constexpr size_t BUFFER_SIZE = 512;
-      char buffer[BUFFER_SIZE] = {};
-      auto const written = std::snprintf( buffer, BUFFER_SIZE - 1, fmt,
-                              args... );
-      assert( written < BUFFER_SIZE );
-
-      std::puts( buffer );
-    }
-  }
-}
-
 [[nodiscard]] inline
 s32 str_to_s32( std::string const& str ) {
   s32 value;
@@ -82,7 +61,7 @@ s32 str_to_s32( std::string const& str ) {
 
   auto const[p, ec] = std::from_chars( begin, end, value );
   if( ec != std::errc() ) {
-      SJ_THROW( "Error when converting '" + str + "' to s32." );
+    SJ_THROW( "Error when converting '" + str + "' to s32." );
   }
 
   return value;

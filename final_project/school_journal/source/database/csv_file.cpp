@@ -59,8 +59,6 @@ void CSV_File::load_and_parse() {
     for( auto const& name : column_names ) {
       columns.emplace_back( name, std::vector<std::string>{} );
     }
-
-    debug_print( "CSV_File::parse(): found %d columns in '%s'.", column_names.size(), path.c_str() );
   }
   SJ_CHECK_FILE( file, "Error after reading first line from '" + path + "'.");
   

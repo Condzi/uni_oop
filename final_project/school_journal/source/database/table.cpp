@@ -82,9 +82,8 @@ void Table::add_row( std::map<std::string, std::string> const& row ) {
     std::string str_to_put;
     try {
       str_to_put = row.at( column.name ); 
-    } catch( std::exception const& ex ) {
+    } catch( std::exception const& ) {
       // Literally a bug that should be catched in tests. 
-      // That's why we're not removing previously added rows.
       SJ_THROW( "Can't add_row -- no value for '" + column.name + "'." );
     }
 

@@ -11,11 +11,13 @@ App::App() {
   // @ToDo: This should be in a state...?
   // Also, prompt an error when failed to load.
   db.set_folder( "non_prod/" );
+  // @ToDo: should be in a try/catch
   db.load_from_folder();
 }
 
 App::~App() {
   delete current_state;
+  // @ToDo: should be in a try/catch
   db.save_to_folder();
 }
 

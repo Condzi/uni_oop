@@ -19,17 +19,13 @@ void Database::set_folder( std::string const &folder ) {
 
 void Database::load_from_folder() {
   ready_to_read = false;
-  try {
-    courses.load_and_parse();
-    enrollments.load_and_parse();
-    fields_of_study.load_and_parse();
-    grades.load_and_parse();
-    instructors.load_and_parse();
-    students.load_and_parse();
-  } catch( std::runtime_error const& ex ) {
-    debug_print(" !!! Exception thrown while loading from folder:\n%s\n", ex.what() );
-    throw std::runtime_error{ex};
-  }
+
+  courses.load_and_parse();
+  enrollments.load_and_parse();
+  fields_of_study.load_and_parse();
+  grades.load_and_parse();
+  instructors.load_and_parse();
+  students.load_and_parse();
 
   ready_to_read = true;
 }
@@ -39,17 +35,12 @@ void Database::save_to_folder() {
     return;
   }
 
-  try {
-    courses.save();
-    enrollments.save();
-    fields_of_study.save();
-    grades.save();
-    instructors.save();
-    students.save();
-  } catch( std::runtime_error const& ex) {
-    debug_print( " !!! Exception thrown while saving to folder:\n%s\n", ex.what() );
-    throw ex;
-  }
+  courses.save();
+  enrollments.save();
+  fields_of_study.save();
+  grades.save();
+  instructors.save();
+  students.save();
 
   unsaved_changes = false;
 }
@@ -60,7 +51,7 @@ Student Database::create_student( Key index ) const {
   std::map<std::string, std::string> row;
   try {
     row = students.get_row( index );
-  } catch( std::runtime_error const& ex ) {
+  } catch( std::runtime_error const& ) {
     SJ_THROW( "Student with index " + std::to_string( index ) + 
               " doesn't exist." );
   }
@@ -96,10 +87,7 @@ Student Database::create_student( Key index ) const {
 
   // 2. Find grades
   std::vector<Key> s_grades_ids;
-  if( s_courses.empty() ) {
-    // Not really a bug -- just a student before enrollments.
-    debug_print( "Student %d has no courses!\n", index );
-  } else {
+  if( !s_courses.empty() ) {
     auto const& grades_student_ids = grades.get_column( "Student_ID" );
     idx = 0;
     for( auto const& g_index : grades_student_ids.content ) {
@@ -122,7 +110,7 @@ Instructor Database::create_instructor( Key id ) const {
   std::map<std::string, std::string> row;
   try {
     row = instructors.get_row( id );
-  } catch( std::runtime_error const& ex ) {
+  } catch( std::runtime_error const& ) {
     SJ_THROW( "Instructor with id " + std::to_string( id ) + 
               " doesn't exist." );
   }
@@ -152,7 +140,7 @@ Grade Database::create_grade( Key id ) const {
   std::map<std::string, std::string> row;
   try {
     row = grades.get_row( id );
-  } catch( std::runtime_error const& ex ) {
+  } catch( std::runtime_error const& ) {
     SJ_THROW( "Grade with id " + std::to_string( id ) + " doesn't exist." );
   }
 
@@ -169,7 +157,7 @@ Course Database::create_course( Key id ) const {
   std::map<std::string, std::string> row;
   try {
     row = courses.get_row( id );
-  } catch( std::runtime_error const& ex ) {
+  } catch( std::runtime_error const& ) {
     SJ_THROW( "Course with id " + std::to_string( id ) + " doesn't exist." );
   }
 
@@ -186,9 +174,9 @@ Field_Of_Study Database::create_field_of_study( Key id ) const {
   std::map<std::string, std::string> row;
   try {
     row = fields_of_study.get_row( id );
-  } catch( std::runtime_error const& ex ) {
-    debug_print( "Can't find Field Of Study with id %d.\n", id );
-    // @ToDo: rethrow?
+  } catch( std::runtime_error const& ) {
+    SJ_THROW( "Field Of Study with id " + std::to_string( id ) + 
+              " doesn't exist." );
   }
   
   return { row["Short_name"], row["Full_name"], id };
@@ -201,7 +189,7 @@ void Database::add_grade( Grade::Value value, std::string comment,
   if( comment.empty() ) {
     comment = "No comment.";
   } else {
-    // Spaces in comments would cause problems.
+    // Commas in comments would cause problems.
     std::replace( comment.begin(), comment.end(), ',', ' ' );
   }
 
