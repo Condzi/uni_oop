@@ -8,6 +8,12 @@ Database::Database() {
   set_folder( "database/" );
 }
 
+std::vector<Key> Database::get_all_courses() const {
+  throw_if_not_ready_to_read();
+
+  return courses.get_key_column().content;
+}
+
 void Database::set_folder( std::string const &folder ) {
   courses.set_folder( folder );
   enrollments.set_folder( folder );

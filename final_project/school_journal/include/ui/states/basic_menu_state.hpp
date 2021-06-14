@@ -23,8 +23,8 @@ protected:
   void display_options();
   void display_cursor();
   // Returns:
-  //	-1 on Terminal::Input::Escape,
-  //	 0 when nothing was pressed
+  //    -1 on Terminal::Input::Escape,
+  //     0 when nothing was pressed
   //     1 on Terminal::Input::Enter
   s32 update_input();
   

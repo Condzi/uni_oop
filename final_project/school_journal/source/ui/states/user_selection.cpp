@@ -3,6 +3,7 @@
 #include "ui/states/user_selection.hpp"
 #include "ui/states/student_overview.hpp"
 #include "ui/states/instructor_overview.hpp"
+#include "ui/states/enrollments_courses_list.hpp"
 #include "ui/app.hpp"
 
 namespace sj
@@ -52,7 +53,7 @@ State* User_Selection::update() {
         Key index;
         ask_for_input( "Index: ", index );
         if( check_if_student_exists( index ) ) {
-          // @ToDo
+          return new Enrollments_Courses_List{ terminal, database, app, index };
         }
       }
     }

@@ -14,6 +14,9 @@ class Database final
 public:
   Database();
 
+  [[nodiscard]]
+  std::vector<Key> get_all_courses() const;
+
   void set_folder( std::string const& folder );
 
   void load_from_folder();
