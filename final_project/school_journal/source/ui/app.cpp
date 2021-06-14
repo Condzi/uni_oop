@@ -8,17 +8,32 @@ namespace sj
 App::App() {
   current_state = new User_Selection{ terminal, db, *this };
   current_state->on_switch();
-  // @ToDo: This should be in a state...?
-  // Also, prompt an error when failed to load.
-  db.set_folder( "non_prod/" );
-  // @ToDo: should be in a try/catch
-  db.load_from_folder();
+
+  try {
+    db.set_folder( "database/" );
+    db.load_from_folder();
+  } catch( std::exception const& ex ) {
+    terminal.clear_screen();
+    terminal.set_pen_coords( {0,0} );
+    std::cout << "Can't load the database. Details:\n";
+    std::cout << ex.what() << std::endl;
+    std::cout << "\n\nExiting.";
+    exit = true;
+  }
 }
 
 App::~App() {
   delete current_state;
-  // @ToDo: should be in a try/catch
-  db.save_to_folder();
+  
+  try {
+    db.save_to_folder();
+  } catch( std::exception const& ex ) {
+    terminal.set_pen_coords( {0,0} );
+    terminal.clear_screen();
+    std::cout << "Can't save the database. Details: \n";
+    std::cout << ex.what() << std::endl;
+    std::cout << "\n\nExiting.";
+  }
 }
 
 void App::request_quit() {

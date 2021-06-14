@@ -6,8 +6,8 @@ namespace sj
 {
 class Enrollments_Courses_List final : public Basic_Menu_State {
 public:
-  Enrollments_Courses_List( Terminal& terminal_, Database& database_, App& app_, 
-                            Key index_ );
+  Enrollments_Courses_List( Terminal& terminal_, Database& database_, 
+                            App& app_,  Key index_ );
 
   void on_switch() override;
   [[nodiscard]]
