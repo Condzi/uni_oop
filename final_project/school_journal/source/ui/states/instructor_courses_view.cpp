@@ -2,6 +2,7 @@
 
 #include "ui/states/instructor_courses_view.hpp"
 #include "ui/states/instructor_overview.hpp"
+#include "ui/states/instructor_students_view.hpp"
 
 namespace sj
 {
@@ -45,7 +46,7 @@ void Instructor_Courses_View::on_switch() {
     for( size_t i = 0; i < courses_ids.size(); i++ ) {
       auto course = database.create_course( courses_ids[i] );
 
-      options_labels[i] = course.get_name() + " (" + 
+      options_labels[i] = course.get_name() + "(" + 
                           std::to_string( courses_ids[i] ) + ")";
     }
   }
@@ -72,7 +73,7 @@ State* Instructor_Courses_View::update() {
     auto instr = database.create_instructor( id );
     auto course_id = instr.get_courses_ids()[current_option];
 
-    // @ToDo: switch to grade view
+    return new Instructor_Students_View{ terminal, database, app, id, course_id };
   }
 
   display_cursor();

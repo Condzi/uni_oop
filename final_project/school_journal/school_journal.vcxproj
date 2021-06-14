@@ -179,6 +179,7 @@
     <ClCompile Include="source\ui\states\instructor_courses_view.cpp" />
     <ClCompile Include="source\ui\states\instructor_data_view.cpp" />
     <ClCompile Include="source\ui\states\instructor_overview.cpp" />
+    <ClCompile Include="source\ui\states\instructor_students_view.cpp" />
     <ClCompile Include="source\ui\states\students_courses_view.cpp" />
     <ClCompile Include="source\ui\states\student_data_view.cpp" />
     <ClCompile Include="source\ui\states\student_grades_view.cpp" />
