@@ -25,7 +25,7 @@ void Student_Data_View::on_switch() {
 
   options_labels[0] = "Name(s): " + student.get_names();
   options_labels[1] = "Surname: " + student.get_surname();
-  options_labels[2] = "Index:   " + std::to_string( index );
+  options_labels[2] = "  Index: " + std::to_string( index );
   options_labels[3] = "Field of study: " + 
                       field_of_study.get_short_name() + 
                       " (" + field_of_study.get_full_name() 

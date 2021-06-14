@@ -52,6 +52,7 @@ void Basic_Menu_State::ask_for_input( std::string const& label,
   terminal.pen_write( label );
 
   if( !(std::cin >> data) ) {
+    std::cin.clear();
     prompt_error( "Invalid input. Try again." );
     display_options();
     display_cursor();

@@ -2,6 +2,7 @@
 
 #include "ui/states/user_selection.hpp"
 #include "ui/states/student_overview.hpp"
+#include "ui/states/instructor_overview.hpp"
 #include "ui/app.hpp"
 
 namespace sj
@@ -43,7 +44,7 @@ State* User_Selection::update() {
       } break;
       case 1: {
         if( check_if_instructor_exists( id ) ) {
-          // @ToDo
+          return new Instructor_Overview{ terminal, database, app, id };
         }
       } break;
       case 2: {

@@ -2,6 +2,7 @@
 
 #include "ui/app.hpp"
 
+// @ToDo: get folder (non_prod or database) from command line?
 int main() {
   try {
     sj::App app;
