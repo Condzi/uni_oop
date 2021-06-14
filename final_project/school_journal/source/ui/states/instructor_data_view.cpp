@@ -36,7 +36,7 @@ State* Instructor_Data_View::update() {
 
   if( input == -1 ) {
     if( yes_no_prompt( "Are you sure you want " 
-                       "to return to Student Overview?" ) ) {
+                       "to return to instructor overview?" ) ) {
       return new Instructor_Overview{ terminal, database, app, id };
     }
   }

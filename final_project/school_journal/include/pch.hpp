@@ -46,9 +46,9 @@ struct Coords final {
 #define SJ_STRINGIFY( x ) SJ_STRINGIFY_IMPL( x )
 
 #define SJ_THROW( message ) \
-throw std::runtime_error( "File: " __FILE__ \
-                          "\nLine: " SJ_STRINGIFY( __LINE__ ) \
-                          "\nInfo: " + std::string{ (message) } )
+throw std::runtime_error( __FILE__ \
+                          ": " SJ_STRINGIFY( __LINE__ ) \
+                          " Info: " + std::string{ (message) } )
 
 #define SJ_CHECK_FILE( file, message ) \
 if( (file).bad() ) SJ_THROW( message )

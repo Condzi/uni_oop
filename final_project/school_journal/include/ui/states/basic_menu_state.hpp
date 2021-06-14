@@ -51,12 +51,22 @@ void Basic_Menu_State::ask_for_input( std::string const& label,
   terminal.set_pen_coords( INPUT_POS );
   terminal.pen_write( label );
 
-  if( !(std::cin >> data) ) {
-    std::cin.clear();
-    prompt_error( "Invalid input. Try again." );
-    display_options();
-    display_cursor();
-    ask_for_input( label, data );
+  if constexpr ( std::is_same_v<std::string, T> ) {
+    if( !std::getline( std::cin >> std::ws, data, '\n' ) ) {
+      std::cin.clear();
+      prompt_error( "Invalid input. Try again." );
+      display_options();
+      display_cursor();
+      ask_for_input( label, data );
+    } 
+  } else {
+    if( !(std::cin >> data) ) {
+      std::cin.clear();
+      prompt_error( "Invalid input. Try again." );
+      display_options();
+      display_cursor();
+      ask_for_input( label, data );
+    }
   }
 }
 }

@@ -17,5 +17,7 @@ private:
   Key const instructor_id;
   Key const course_id;
   bool const no_students;
+
+  std::vector<Key> students_ids;
 };
 }

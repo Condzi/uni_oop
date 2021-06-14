@@ -32,23 +32,26 @@ State* User_Selection::update() {
     if( yes_no_prompt( "Are you sure you want to exit?" ) ) {
       app.request_quit();
     }
-  } else if ( input == 1 ) {
-    Key id;
-    ask_for_input( "Specify ID/Index: ", id );
-  
+  } else if ( input == 1 ) {  
     switch( current_option ) {
       case 0: {
-        if( check_if_student_exists( id ) ) {
-          return new Student_Overview{ terminal, database, app, id };
+        Key index;
+        ask_for_input( "Index: ", index );
+        if( check_if_student_exists( index ) ) {
+          return new Student_Overview{ terminal, database, app, index };
         }
       } break;
       case 1: {
+        Key id;
+        ask_for_input( "ID: ", id );
         if( check_if_instructor_exists( id ) ) {
           return new Instructor_Overview{ terminal, database, app, id };
         }
       } break;
       case 2: {
-        if( check_if_student_exists( id ) ) {
+        Key index;
+        ask_for_input( "Index: ", index );
+        if( check_if_student_exists( index ) ) {
           // @ToDo
         }
       }

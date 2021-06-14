@@ -32,7 +32,7 @@ public:
   void pen_write( std::string const& text ) const;
   void clear_screen() const;
 
-  void wait_for_enter() const;
+  void wait_for_enter();
   void reset_input_state();
   
   void update();

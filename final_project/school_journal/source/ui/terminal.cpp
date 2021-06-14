@@ -53,9 +53,12 @@ void Terminal::clear_screen() const {
   system( "cls" );
 }
 
-void Terminal::wait_for_enter() const {
-  std::cin.ignore( std::numeric_limits<std::streamsize>::max(), '\n' );
-  std::cin.get();
+void Terminal::wait_for_enter() {
+  reset_input_state();
+
+  while( !is_key_pressed( Input::Enter ) ) {
+    update_input_state();
+  }
 }
 
 void Terminal::reset_input_state() {
