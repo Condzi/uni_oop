@@ -3,6 +3,7 @@
 #include "ui/states/instructor_overview.hpp"
 #include "ui/states/user_selection.hpp"
 #include "ui/states/instructor_data_view.hpp"
+#include "ui/states/instructor_courses_view.hpp"
 
 namespace sj
 {
@@ -41,8 +42,7 @@ State* Instructor_Overview::update() {
         return new Instructor_Data_View{ terminal, database, app, id };
       } break;
       case 1: {
-        // @ToDo
-        // return new Student_Courses_View{ terminal, database, app, index };
+        return new Instructor_Courses_View{ terminal, database, app, id };
       } break;
     }
   }

@@ -131,7 +131,26 @@ Instructor Database::create_instructor( Key id ) const {
     idx++;
   }
 
-  return { i_names, i_surname, std::move( i_courses_ids ), id };
+  auto const& course_ids_enrollments = enrollments.get_column( "Course_ID" );
+  auto const& students_ids_enrollments = enrollments.get_column( "Student_Index" );
+
+  // Add students to the vector, but only unique.
+  std::vector<Key> i_students;
+  idx = 0;
+  for( auto const& course_id_str : course_ids_enrollments.content ) {
+    auto course_id = str_to_s32( course_id_str );
+    if( std::find( i_courses_ids.begin(), i_courses_ids.end(), course_id ) != i_courses_ids.end() ) {
+
+      auto student_id = str_to_s32( students_ids_enrollments.content[idx] );
+
+      if( std::find( i_students.begin(), i_students.end(), student_id) == i_students.end() ) {
+        i_students.push_back( student_id );
+      }
+    }
+    idx++;
+  }
+
+  return { i_names, i_surname, std::move( i_courses_ids ), std::move( i_students ), id };
 }
 
 Grade Database::create_grade( Key id ) const {
